@@ -1,0 +1,30 @@
+<component name="libraryTable">
+  <library name="com.aliyun.hbase:graphdb-java-sdk:2.0.1" type="repository">
+    <properties maven-id="com.aliyun.hbase:graphdb-java-sdk:2.0.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/aliyun/hbase/graphdb-java-sdk/2.0.1/graphdb-java-sdk-2.0.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/tinkerpop/gremlin-driver/3.3.3/gremlin-driver-3.3.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/tinkerpop/gremlin-core/3.3.3/gremlin-core-3.3.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/tinkerpop/gremlin-shaded/3.3.3/gremlin-shaded-3.3.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-configuration/commons-configuration/1.10/commons-configuration-1.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/yaml/snakeyaml/1.15/snakeyaml-1.15.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/javatuples/javatuples/1.2/javatuples-1.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/carrotsearch/hppc/0.7.1/hppc-0.7.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/jcabi/jcabi-manifests/1.1/jcabi-manifests-1.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/jcabi/jcabi-log/0.14/jcabi-log-0.14.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/javapoet/1.8.0/javapoet-1.8.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/objecthunter/exp4j/0.4.8/exp4j-0.4.8.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.7.21/jcl-over-slf4j-1.7.21.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.0.56.Final/netty-all-4.0.56.Final.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy/2.4.15/groovy-2.4.15.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-json/2.4.15/groovy-json-2.4.15.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-sql/2.4.15/groovy-sql-2.4.15.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.3.1/commons-lang3-3.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
