@@ -19,25 +19,11 @@ public class QuerySPARQL {
             LoggerFactory.getLogger(QuerySPARQL.class);
 
     public static void main(String args[]){
-        Repository repo = new HTTPRepository("http://192.168.1.102:7200/","agro");
+        Repository repo = new HTTPRepository("http://192.168.1.102:7200/","18");
         repo.init();
         RepositoryConnection con = repo.getConnection();
 
-        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, "#Obtém as classes da DBpedia Ontology utilizadas por objetos.\n" +
-                "PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>\n" +
-                "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-                "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-                "select distinct ?Classe where { \n" +
-                "    service <http://192.168.9.1:7200/repositories/Teste1> {\n" +
-                "        ?s ?p ?o .\n" +
-                "        bind(iri(replace(str(?o),\"page\",\"resource\"))as ?vObj)         \n" +
-                "    }\n" +
-                "    service <http://dbpedia.org/sparql> {\n" +
-                "       \t?vObj rdf:type ?Classe .\n" +
-                "        ?Classe rdf:type owl:Class .\n" +
-                "    }\n" +
-                "} ");
+        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, "select * where{?name ?b ?c.}limit 10");
         TupleQueryResult result = null;
 
         result = query.evaluate();
@@ -46,6 +32,7 @@ public class QuerySPARQL {
 
             Value name = binding.getValue("name");
             logger.trace("name  = " + name.stringValue());
+            System.out.print(name.stringValue());
             con.close();
         }
     }
