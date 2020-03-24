@@ -23,18 +23,27 @@ public class QuerySPARQL {
         repo.init();
         RepositoryConnection con = repo.getConnection();
 
-        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, "select * where{?name ?b ?c.}limit 10");
+        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, "");
         TupleQueryResult result = null;
 
         result = query.evaluate();
+        
         while (result.hasNext()){
             BindingSet binding = result.next();
 
-            Value name = binding.getValue("name");
-            logger.trace("name  = " + name.stringValue());
-            System.out.print(name.stringValue());
-            con.close();
+            Value subject = binding.getValue("subject");
+            Value predicative = binding.getValue("predicative");
+            Value object = binding.getValue("object");
+            Value classeConceito = binding.getValue("ClasseConceito");
+            //logger.trace("name  = " + name.stringValue());
+            System.out.println("********");
+            System.out.println(classeConceito.stringValue());
+            //System.out.println(predicative.stringValue());
+            //System.out.println(object.stringValue());
+            System.out.println("********");
+
         }
+        con.close();
     }
 
 }

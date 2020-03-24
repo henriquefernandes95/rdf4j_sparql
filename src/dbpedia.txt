@@ -1,0 +1,37 @@
+#Obtém as classes utilizadas por sujeitos e objetos anotadas com dbpedia.
+PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+select distinct ?ClasseConceito where {
+    {
+    	service <http://192.168.1.102:7200/repositories/22> {
+            ?s ?p ?o .
+            #Extrai sujeitos
+            FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "dbpedia")) .
+            #Esta string com endpoint pode ser parametrizada
+            BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+            BIND (uri(replace(str(?s),"page","resource")) AS ?vSuj) .
+    	}
+
+        service ?vEndpoint {
+            ?vSuj rdf:type ?ClasseConceito .
+            ?ClasseConceito rdf:type owl:Class .
+        }
+}
+union {
+        service <http://192.168.1.102:7200/repositories/22> {
+            ?s ?p ?o .
+            #Extrai objetos
+            FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "dbpedia")) .
+            #Esta string com endpoint pode ser parametrizada
+            BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+            BIND (uri(replace(str(?o),"page","resource")) AS ?vObj) .
+        }
+
+        service ?vEndpoint {
+        	?vObj rdf:type ?ClasseConceito .
+        	?ClasseConceito rdf:type owl:Class .
+    	}
+}
+}
+
