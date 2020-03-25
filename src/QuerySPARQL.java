@@ -13,15 +13,19 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 
 public class QuerySPARQL {
     private static Logger logger =
             LoggerFactory.getLogger(QuerySPARQL.class);
 
     public static void main(String args[]){
-        Repository repo = new HTTPRepository("http://192.168.1.102:7200/","18");
+        Repository repo = new HTTPRepository("http://192.168.1.102:7200/","22");
         repo.init();
         RepositoryConnection con = repo.getConnection();
+        InputStream is = new FileInputStream("dbpedia.txt");
 
         TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, "");
         TupleQueryResult result = null;
