@@ -1,14 +1,22 @@
 
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
+import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParser;
+import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.ontotext.graphdb.*;
 
 import java.io.*;
 
@@ -83,7 +91,18 @@ public class QuerySPARQL {
 
     //cria repositório
 
+    // Instantiate a local repository manager and initialize it
+    RepositoryManager rm = new LocalRepositoryManager(new File("."));
+    rm.initialize();
+    // Instantiate a repository graph model
+    TreeModel graph = new TreeModel();
 
+    // Read repository configuration file
+    InputStream config = EmbeddedGraphDB.class.getResourceAsStream("/repo-defaults.ttl");
+    RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
+rdfParser.setRDFHandler(new StatementCollector(graph));
+rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
+config.close();
 
 
 
