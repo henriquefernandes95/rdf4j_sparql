@@ -79,4 +79,13 @@ public class QuerySPARQL {
         con.close();
     }
 
+
+
+    //cria repositório
+
+
+
+
+
+
 }
