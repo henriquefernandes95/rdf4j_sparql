@@ -1,27 +1,45 @@
 
+import jdk.internal.util.xml.impl.Input;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ontotext.graphdb.*;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParser;
+import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
 
 import java.io.*;
+import java.util.Iterator;
 
 
-public class QuerySPARQL {
+public class QuerySPARQL<iterator> {
     private static Logger logger =
             LoggerFactory.getLogger(QuerySPARQL.class);
 
@@ -85,24 +103,83 @@ public class QuerySPARQL {
 
         }
         con.close();
+
+
+
+
+
+
+
+        //cria repositório
+
+        InputStream config = null;
+        RDFParser rdfParser=null;
+        TreeModel graph = new TreeModel();
+        RepositoryManager manager = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
+        Model model = graph.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
+        Iterator<Statement> iter = model.iterator();
+        Statement statement = iter.next();
+        Resource repositoryNode =  statement.getSubject();
+        manager.init();
+        try {
+
+            config = new FileInputStream("repo-default.ttl");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        rdfParser = Rio.createParser(RDFFormat.TURTLE);
+        rdfParser.setRDFHandler(new StatementCollector(graph));
+        try {
+            rdfParser.parse(config, String.valueOf(RepositoryConfig.create(model,repositoryNode)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            config.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        RepositoryConfig repositoryConfig = RepositoryConfig.create(graph,repositoryNode);
+        manager.addRepositoryConfig(repositoryConfig);
+
+
+
+
+
+
+
+
+
+
     }
 
 
 
-    //cria repositório
 
-    // Instantiate a local repository manager and initialize it
-    RepositoryManager rm = new LocalRepositoryManager(new File("."));
-    rm.initialize();
+
+
+
+
+
+
     // Instantiate a repository graph model
-    TreeModel graph = new TreeModel();
 
-    // Read repository configuration file
-    InputStream config = EmbeddedGraphDB.class.getResourceAsStream("/repo-defaults.ttl");
-    RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
-rdfParser.setRDFHandler(new StatementCollector(graph));
-rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
-config.close();
+
+//    // Read repository configuration file
+//    InputStream config;
+//
+//    {
+//        try {
+//            config = new FileInputStream(new File("repo-defaults.ttl"));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
 
 
 

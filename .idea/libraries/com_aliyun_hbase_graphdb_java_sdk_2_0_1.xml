@@ -19,10 +19,9 @@
       <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.7.21/jcl-over-slf4j-1.7.21.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.0.56.Final/netty-all-4.0.56.Final.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy/2.4.15/groovy-2.4.15-indy.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-json/2.4.15/groovy-json-2.4.15-indy.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy/2.4.15/groovy-2.4.15.jar!/" />
-      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-sql/2.4.15/groovy-sql-2.4.15-indy.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-json/2.4.15/groovy-json-2.4.15.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/groovy/groovy-sql/2.4.15/groovy-sql-2.4.15.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.3.1/commons-lang3-3.3.1.jar!/" />
     </CLASSES>
     <JAVADOC />
