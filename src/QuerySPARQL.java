@@ -5,11 +5,9 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
@@ -51,6 +49,7 @@ public class QuerySPARQL<iterator> {
         InputStream stream = null;
         String line=null;
         BufferedReader buf = null;
+        Value classeConceito = null;//variavel sera utilizada em diferentes escopos do codigo
 
         //Carrega as consultas do arquivo
         try {
@@ -93,7 +92,7 @@ public class QuerySPARQL<iterator> {
             Value subject = binding.getValue("subject");
             Value predicative = binding.getValue("predicative");
             Value object = binding.getValue("object");
-            Value classeConceito = binding.getValue("ClasseConceito");
+            classeConceito = binding.getValue("ClasseConceito");
             //logger.trace("name  = " + name.stringValue());
             System.out.println("********");
             System.out.println(classeConceito.stringValue());
@@ -115,37 +114,70 @@ public class QuerySPARQL<iterator> {
         InputStream config = null;
         RDFParser rdfParser=null;
         TreeModel graph = new TreeModel();
-        RepositoryManager manager = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
         Model model = graph.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
-        Iterator<Statement> iter = model.iterator();
-        Statement statement = iter.next();
-        Resource repositoryNode =  statement.getSubject();
+
+
+
+        RepositoryManager manager = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
         manager.init();
+        manager.getAllRepositories();
+
         try {
 
-            config = new FileInputStream("repo-default.ttl");
+            config = new FileInputStream(new File("repo-defaults.ttl"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(graph));
+
         try {
-            rdfParser.parse(config, String.valueOf(RepositoryConfig.create(model,repositoryNode)));
+            rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
         try {
             config.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+//
 
 
 
+        //Obtendo o repositório como recurso
+        Resource repoNode = Models.subject(graph.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY)).orElseThrow(() -> new RuntimeException("Oops, no <http://www.openrdf.org/config/repository#> subject found!"));
 
-        RepositoryConfig repositoryConfig = RepositoryConfig.create(graph,repositoryNode);
-        manager.addRepositoryConfig(repositoryConfig);
 
+        //Adicionando as configurações
+        RepositoryConfig configObj = RepositoryConfig.create(graph, repoNode);
+        manager.addRepositoryConfig(configObj);
+
+
+        //Obter o repositorio criado
+        Repository repository = manager.getRepository("graphdb-repo");
+
+        //Conectar ao repositorio
+        RepositoryConnection repoCon = repository.getConnection();
+
+
+        //Carregar dados
+        repoCon.begin();
+        Update updateOp = repoCon.prepareUpdate(QueryLanguage.SPARQL, classeConceito.stringValue());
+        updateOp.execute();
+
+        //Encerrar a conexão
+        repoCon.close();
+        repository.shutDown();
+        manager.shutDown();
+
+
+
+//        RepositoryConfig repositoryConfig = RepositoryConfig.create(graph,repositoryNode);
+//        manager.addRepositoryConfig(repositoryConfig);
+//
 
 
 
