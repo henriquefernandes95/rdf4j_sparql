@@ -1,5 +1,6 @@
 
 import jdk.internal.util.xml.impl.Input;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -49,7 +50,11 @@ public class QuerySPARQL<iterator> {
         InputStream stream = null;
         String line=null;
         BufferedReader buf = null;
+        PrintWriter file = null;
+        String results = new String();
+
         Value classeConceito = null;//variavel sera utilizada em diferentes escopos do codigo
+
 
         //Carrega as consultas do arquivo
         try {
@@ -93,17 +98,22 @@ public class QuerySPARQL<iterator> {
             Value predicative = binding.getValue("predicative");
             Value object = binding.getValue("object");
             classeConceito = binding.getValue("ClasseConceito");
+            results += classeConceito.stringValue()+"\n";
+
             //logger.trace("name  = " + name.stringValue());
-            System.out.println("********");
-            System.out.println(classeConceito.stringValue());
+
+            try {
+                FileUtils.writeStringToFile(new File("saida.txt"),results);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //System.out.println(predicative.stringValue());
             //System.out.println(object.stringValue());
-            System.out.println("********");
+
 
         }
         con.close();
-
-
 
 
 
@@ -163,10 +173,10 @@ public class QuerySPARQL<iterator> {
         RepositoryConnection repoCon = repository.getConnection();
 
 
-        //Carregar dados
-        repoCon.begin();
-        Update updateOp = repoCon.prepareUpdate(QueryLanguage.SPARQL, classeConceito.stringValue());
-        updateOp.execute();
+//        //Carregar dados
+//        repoCon.begin();
+//        Update updateOp = repoCon.prepareUpdate(QueryLanguage.SPARQL, classeConceito.stringValue());
+//        updateOp.execute();
 
         //Encerrar a conexão
         repoCon.close();
