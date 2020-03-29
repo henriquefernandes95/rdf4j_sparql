@@ -94,9 +94,9 @@ public class QuerySPARQL<iterator> {
         while (result.hasNext()){
             BindingSet binding = result.next();
 
-            Value subject = binding.getValue("subject");
-            Value predicative = binding.getValue("predicative");
-            Value object = binding.getValue("object");
+            //Value subject = binding.getValue("subject");
+            //Value predicative = binding.getValue("predicative");
+            //Value object = binding.getValue("object");
             classeConceito = binding.getValue("ClasseConceito");
             results += classeConceito.stringValue()+"\n";
 
