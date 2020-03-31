@@ -53,8 +53,8 @@ public class QuerySPARQL<iterator> {
         PrintWriter file = null;
         String results = new String();
 
-        Value classeConceito = null;//variavel sera utilizada em diferentes escopos do codigo
-
+        Value classeConceito1 = null;//variavel sera utilizada em diferentes escopos do codigo
+        Value classeConceito2 = null;
 
         //Carrega as consultas do arquivo
         try {
@@ -90,15 +90,18 @@ public class QuerySPARQL<iterator> {
         TupleQueryResult result = null;
 
          result = query.evaluate();
-
+        results += "Classe Conceito 1"+"\t"+"Classe Conceito2"+"\n";
         while (result.hasNext()){
             BindingSet binding = result.next();
 
             //Value subject = binding.getValue("subject");
             //Value predicative = binding.getValue("predicative");
             //Value object = binding.getValue("object");
-            classeConceito = binding.getValue("ClasseConceito");
-            results += classeConceito.stringValue()+"\n";
+            classeConceito1 = binding.getValue("ClasseConceito1");
+            classeConceito2 = binding.getValue("ClasseConceito2");
+
+            results += classeConceito1.stringValue()+"\t";
+            results += classeConceito2.stringValue()+"\n";
 
             //logger.trace("name  = " + name.stringValue());
 
