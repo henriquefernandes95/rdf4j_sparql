@@ -87,61 +87,50 @@ public class QuerySPARQL<iterator> {
         }
 
         String fileAsString = sb.toString();
-        //System.out.println("Contents : " + fileAsString);
-        queries=fileAsString.split("#QUERY");//separador das consultas
-        //System.out.println(queries[2]);
 
+        queries=fileAsString.split("#QUERY");//separador das consultas
+
+        System.out.println(queries.length);
         //Realiza a consulta
-        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[1]);
+        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[2]);
         TupleQueryResult result = null;
 
         result = query.evaluate();
-        //results += "Classe Conceito 1"+"\t"+"Classe Conceito2"+"\n";
+        values = new String[result.getBindingNames().size()];
+        classes = new String[result.getBindingNames().size()];
         while (result.hasNext()){
             BindingSet binding = result.next();
-            values = new String[binding.size()];
-            classes = new String[binding.size()];
+
             if(primeira){
                 inter=binding.iterator();
 
 
-                while(inter.hasNext()){
-                    values[count]=inter.next().toString();
-                    System.out.println(values[count]);
+
+                while(count < result.getBindingNames().size()){
+                    System.out.println(result.getBindingNames().get(0));
+                    values[count]= String.valueOf(result.getBindingNames().get(count));
+                    //System.out.println(values[count]);
                     results+= values[count]+"\t";
                     count++;
                 }
                 results+="\n";
-                System.out.println(results);
+                //System.out.println(results);
                 primeira=false;
 
             }
             count=0;
             while(count < binding.size()){
                 System.out.println(binding.getValue(values[count]).toString());
-                //binding.getValue(values[count]).toString();
+                classes[count]=binding.getValue(values[count]).toString();
                 count++;
             }
-            //Value subject = binding.getValue("subject");
-            //Value predicative = binding.getValue("predicative");
-            //Value object = binding.getValue("object");
-            //classeConceito1 = binding.getValue("ClasseConceito1");
-            //classeConceito2 = binding.getValue("ClasseConceito2");
 
-            if(binding.hasBinding("ClasseConceito1")){
-                System.out.println("\n******\nTem");
-            }
 
-            //System.out.println(binding.getBindingNames().iterator().next());
-            //System.out.println(binding.getBindingNames().size());
+
             for (String clas : classes){
                 results += clas+"\t";
             }
             results+= "\n";
-            //results += classeConceito1.stringValue()+"\t";
-            //results += classeConceito2.stringValue()+"\n";
-
-            //logger.trace("name  = " + name.stringValue());
 
             try {
                 FileUtils.writeStringToFile(new File("saida.txt"),results);
