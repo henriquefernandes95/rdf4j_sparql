@@ -44,7 +44,7 @@ public class QuerySPARQL<iterator> {
 
     public static void main(String args[]) {
         //inicializa o repositório
-        Repository repo = new HTTPRepository("http://192.168.1.102:7200/", "22");
+        Repository repo = new HTTPRepository("http://192.168.1.102:7200/", "D3");
         repo.init();
         RepositoryConnection con = repo.getConnection();
         InputStream stream = null;
@@ -52,6 +52,11 @@ public class QuerySPARQL<iterator> {
         BufferedReader buf = null;
         PrintWriter file = null;
         String results = new String();
+        String[] queries, values, classes;
+        Boolean primeira=true;
+        int count=0;
+        int size = 0;
+        Iterator inter;
 
         Value classeConceito1 = null;//variavel sera utilizada em diferentes escopos do codigo
         Value classeConceito2 = null;
@@ -83,25 +88,58 @@ public class QuerySPARQL<iterator> {
 
         String fileAsString = sb.toString();
         //System.out.println("Contents : " + fileAsString);
-
+        queries=fileAsString.split("#QUERY");//separador das consultas
+        //System.out.println(queries[2]);
 
         //Realiza a consulta
-        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, fileAsString);
+        TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[1]);
         TupleQueryResult result = null;
 
-         result = query.evaluate();
-        results += "Classe Conceito 1"+"\t"+"Classe Conceito2"+"\n";
+        result = query.evaluate();
+        //results += "Classe Conceito 1"+"\t"+"Classe Conceito2"+"\n";
         while (result.hasNext()){
             BindingSet binding = result.next();
+            values = new String[binding.size()];
+            classes = new String[binding.size()];
+            if(primeira){
+                inter=binding.iterator();
 
+
+                while(inter.hasNext()){
+                    values[count]=inter.next().toString();
+                    System.out.println(values[count]);
+                    results+= values[count]+"\t";
+                    count++;
+                }
+                results+="\n";
+                System.out.println(results);
+                primeira=false;
+
+            }
+            count=0;
+            while(count < binding.size()){
+                System.out.println(binding.getValue(values[count]).toString());
+                //binding.getValue(values[count]).toString();
+                count++;
+            }
             //Value subject = binding.getValue("subject");
             //Value predicative = binding.getValue("predicative");
             //Value object = binding.getValue("object");
-            classeConceito1 = binding.getValue("ClasseConceito1");
-            classeConceito2 = binding.getValue("ClasseConceito2");
+            //classeConceito1 = binding.getValue("ClasseConceito1");
+            //classeConceito2 = binding.getValue("ClasseConceito2");
 
-            results += classeConceito1.stringValue()+"\t";
-            results += classeConceito2.stringValue()+"\n";
+            if(binding.hasBinding("ClasseConceito1")){
+                System.out.println("\n******\nTem");
+            }
+
+            //System.out.println(binding.getBindingNames().iterator().next());
+            //System.out.println(binding.getBindingNames().size());
+            for (String clas : classes){
+                results += clas+"\t";
+            }
+            results+= "\n";
+            //results += classeConceito1.stringValue()+"\t";
+            //results += classeConceito2.stringValue()+"\n";
 
             //logger.trace("name  = " + name.stringValue());
 
