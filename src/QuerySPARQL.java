@@ -18,6 +18,8 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
+import org.eclipse.rdf4j.repository.util.RDFInserter;
+import org.eclipse.rdf4j.repository.util.RDFLoader;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
@@ -191,6 +193,12 @@ public class QuerySPARQL<iterator> {
             //        Update updateOp = repoCon.prepareUpdate(QueryLanguage.SPARQL, classeConceito.stringValue());
             //        updateOp.execute();
 
+
+            carregaDados(repoCon);
+
+
+
+
             //Encerrar a conexão
             repoCon.close();
             repository.shutDown();
@@ -258,7 +266,15 @@ public class QuerySPARQL<iterator> {
         return 0;
     }
 
+    private static int carregaDados(RepositoryConnection repoCon){
+        RDFInserter inserter = new RDFInserter(repoCon);
+        RDFLoader loader = new RDFLoader(repoCon.getParserConfig(),repoCon.getValueFactory())
 
+
+        repoCon.begin();
+        loader.load(new File("metadata_from_portal.rdf"),RDFFormat.NTRIPLES,inserter);
+        return 0;
+    }
 
 
 
