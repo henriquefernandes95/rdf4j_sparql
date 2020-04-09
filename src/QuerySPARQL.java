@@ -41,6 +41,8 @@ import sun.nio.cs.UTF_32;
 import java.io.*;
 import java.util.Iterator;
 
+import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
+
 
 public class QuerySPARQL<iterator> {
     private static Logger logger = LoggerFactory.getLogger(QuerySPARQL.class);
@@ -267,12 +269,23 @@ public class QuerySPARQL<iterator> {
     }
 
     private static int carregaDados(RepositoryConnection repoCon){
-        RDFInserter inserter = new RDFInserter(repoCon);
-        RDFLoader loader = new RDFLoader(repoCon.getParserConfig(),repoCon.getValueFactory())
-
+        InputStream inStream=null;
+        try {
+            inStream = new FileInputStream(new File("metadata_from_portal.rdf"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         repoCon.begin();
-        loader.load(new File("metadata_from_portal.rdf"),RDFFormat.NTRIPLES,inserter);
+
+        Rio.parse(inStream, String.valueOf(RDFXML))
+
+        try {
+            repoCon.add(inStream,"", RDFXML);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return 0;
     }
 
