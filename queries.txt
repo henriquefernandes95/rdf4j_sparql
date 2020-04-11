@@ -6,7 +6,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 select distinct ?ClasseConceito1 ?ClasseConceito2 where {
     {
-    	service <http://localhost:7200/repositories/D1> {
+    	service <http://192.168.1.102:7200/repositories/D1> {
             ?s ?p ?o .
             #Extrai sujeitos
             FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "agrovoc")) .
@@ -25,7 +25,7 @@ select distinct ?ClasseConceito1 ?ClasseConceito2 where {
         }
 }
 union {
-        service <http://localhost:7200/repositories/D1> {
+        service <http://192.168.1.102:7200/repositories/D1> {
             ?s ?p ?o .
             #Extrai objetos
             FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "agrovoc")) .
@@ -43,7 +43,7 @@ union {
             ?ClasseDBpedia rdf:type ?ClasseConceito2 .
         }
 }
-}
+}limit 1
 #QUERY
 #Obtém as classes utilizadas por sujeitos e objetos anotadas com CHEBI.
 PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
@@ -77,5 +77,5 @@ union {
         }
 
 }
-}
+}limit 1
 

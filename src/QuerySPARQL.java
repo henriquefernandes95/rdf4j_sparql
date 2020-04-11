@@ -1,6 +1,6 @@
 
 import com.ontotext.trree.util.convert.storage.PrettyPrinter;
-import jdk.internal.util.xml.impl.Input;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import sun.nio.cs.UTF_32;
+
 
 
 import java.io.*;
@@ -269,22 +269,15 @@ public class QuerySPARQL<iterator> {
     }
 
     private static int carregaDados(RepositoryConnection repoCon){
-        InputStream inStream=null;
-        try {
-            inStream = new FileInputStream(new File("metadata_from_portal.rdf"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
-        repoCon.begin();
 
-        Rio.parse(inStream, String.valueOf(RDFXML))
 
         try {
-            repoCon.add(inStream,"", RDFXML);
+            repoCon.add(new File("metadata_from_portal.rdf"),"", RDFXML);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         return 0;
     }

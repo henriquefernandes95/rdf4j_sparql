@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="lnkd.tech.editor.sem.tech" name="RDF / Semantic Web">
+      <configuration />
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -10,5 +15,8 @@
     <orderEntry type="library" name="org.eclipse.rdf4j:rdf4j-client:3.0.0" level="project" />
     <orderEntry type="library" name="com.aliyun.hbase:graphdb-java-sdk:2.0.1" level="project" />
     <orderEntry type="library" name="com.ontotext.graphdb:graphdb-free-runtime:9.1.1" level="project" />
+    <orderEntry type="library" name="RDF: World Wide Web Consortium" level="application" />
+    <orderEntry type="library" name="RDF: Dublin Core Metadata Initiative" level="application" />
+    <orderEntry type="library" name="RDF: The FOAF project" level="application" />
   </component>
 </module>
