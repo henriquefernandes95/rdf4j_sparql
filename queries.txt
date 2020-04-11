@@ -4,9 +4,10 @@ PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-select distinct ?ClasseConceito1 ?ClasseConceito2 where {
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseConceitoLabel2 where {
     {
-    	service <http://192.168.1.102:7200/repositories/D1> {
+    	service <http://192.168.9.1:7200/repositories/Triplificados> {
             ?s ?p ?o .
             #Extrai sujeitos
             FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "agrovoc")) .
@@ -15,17 +16,19 @@ select distinct ?ClasseConceito1 ?ClasseConceito2 where {
     	}
 
         service ?vEndpoint {
-            ?s skos:broader ?Classe .
-            ?Classe skos:prefLabel ?ClasseConceito1 .
+            ?s skos:broader ?ClasseConceito1 .
+            ?ClasseConceito1 skos:prefLabel ?ClasseConceitoLabel1 .
             ?s skos:closeMatch ?ClasseDBpedia .
-            FILTER langMatches( lang(?ClasseConceito1), "PT" ) .
+            FILTER langMatches( lang(?ClasseConceitoLabel1), "PT" ) .
         }
         service <http://dbpedia.org/sparql> {
             ?ClasseDBpedia rdf:type ?ClasseConceito2 .
+            ?ClasseConceito2 rdfs:label ?ClasseConceitoLabel2 .
+            FILTER langMatches( lang(?ClasseConceitoLabel2), "PT" ) .
         }
 }
 union {
-        service <http://192.168.1.102:7200/repositories/D1> {
+        service <http://192.168.9.1:7200/repositories/Triplificados> {
             ?s ?p ?o .
             #Extrai objetos
             FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "agrovoc")) .
@@ -34,24 +37,25 @@ union {
         }
 
         service ?vEndpoint {
-            ?o skos:broader ?Classe .
-            ?Classe skos:prefLabel ?ClasseConceito1 .
+            ?o skos:broader ?ClasseConceito1 .
+            ?ClasseConceito1 skos:prefLabel ?ClasseConceitoLabel1 .
             ?o skos:closeMatch ?ClasseDBpedia .
-            FILTER langMatches( lang(?ClasseConceito1), "PT" ) .
+            FILTER langMatches( lang(?ClasseConceitoLabel1), "PT" ) .
         }
         service <http://dbpedia.org/sparql> {
             ?ClasseDBpedia rdf:type ?ClasseConceito2 .
+            ?ClasseConceito2 rdfs:label ?ClasseConceitoLabel2 .
+			FILTER langMatches( lang(?ClasseConceitoLabel2), "PT" ) .
         }
 }
-}limit 1
+}
 #QUERY
-#Obtém as classes utilizadas por sujeitos e objetos anotadas com CHEBI.
 PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-select distinct ?ClasseConceito1 where {
+select distinct ?ClasseConceito ?ClasseConceitoLabel where {
     {
-    	service <http://192.168.1.102:7200/repositories/D3> {
+    	service <http://192.168.9.1:7200/repositories/Triplificados> {
             ?s ?p ?o .
             #Extrai sujeitos
             FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(lcase(str(?s)), "chebi")) .
@@ -59,12 +63,12 @@ select distinct ?ClasseConceito1 where {
     	}
 
         service ?vEndpoint {
-            ?s rdfs:subClassOf ?Classe .
-            ?Classe rdfs:label ?ClasseConceito1 .
+            ?s rdfs:subClassOf ?ClasseConceito .
+            ?ClasseConceito rdfs:label ?ClasseConceitoLabel .
         }
 }
 union {
-        service <http://192.168.1.102:7200/repositories/D3> {
+        service <http://192.168.9.1:7200/repositories/Triplificados> {
             ?s ?p ?o .
             #Extrai objetos
             FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(lcase(str(?o)), "chebi")) .
@@ -72,10 +76,78 @@ union {
         }
 
         service ?vEndpoint {
-            ?o rdfs:subClassOf ?Classe .
-            ?Classe rdfs:label ?ClasseConceito1 .
+            ?o rdfs:subClassOf ?ClasseConceito .
+            ?ClasseConceito rdfs:label ?ClasseConceitoLabel .
         }
 
 }
-}limit 1
+}
+#QUERY
+#Obtém as classes utilizadas por sujeitos e objetos anotadas com DBPEDIA.
+PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select distinct ?ClasseConceito ?ClasseConceitoLabel where {
+    {
+    	service <http://192.168.9.1:7200/repositories/Triplificados> {
+            ?s ?p ?o .
+            #Extrai sujeitos
+            FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "dbpedia")) .
+            BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+            BIND (uri(replace(str(?s),"page","resource")) AS ?vSuj) .
+    	}
+
+        service ?vEndpoint {
+            ?vSuj rdf:type ?ClasseConceito .
+            ?ClasseConceito rdf:type owl:Class .
+            ?ClasseConceito rdfs:label ?ClasseConceitoLabel .
+            FILTER langMatches( lang(?ClasseConceitoLabel), "PT" ) .
+        }
+}
+union {
+        service <http://192.168.9.1:7200/repositories/Triplificados> {
+            ?s ?p ?o .
+            #Extrai objetos
+            FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "dbpedia")) .                   BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+            BIND (uri(replace(str(?o),"page","resource")) AS ?vObj) .
+        }
+
+        service ?vEndpoint {
+        	?vObj rdf:type ?ClasseConceito .
+        	?ClasseConceito rdf:type owl:Class .
+			?ClasseConceito rdfs:label ?ClasseConceitoLabel .
+            FILTER langMatches( lang(?ClasseConceitoLabel), "PT" ) .
+    	}
+}
+}
+#QUERY
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dct: <http://purl.org/dc/terms/>
+select ?Portal ?DS ?titleDS ?id ?endArquivo ?nomeOrg
+from named <http://teste1.com/metadatafromportal>
+where {graph <http://teste1.com/metadatafromportal> {
+        	?Portal dcat:dataset ?DS .
+            ?DS dct:title ?titleDS .
+        	?DS dcat:distribution ?x .
+            ?x dct:identifier ?id .
+            ?x dcat:downloadURL ?endArquivo .
+        	?DS dct:publisher ?y .
+        	?y foaf:name ?nomeOrg.
+        	}
+
+        } order by ?DS
+#QUERY
+#Obtém as classes utilizadas por sujeitos e objetos anotadas com FOAF.
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+select distinct ?ClasseConceito where {
+	{?ClasseConceito ?p ?o .
+     FILTER (isURI(?ClasseConceito) && contains(lcase(str(?ClasseConceito)), "foaf")) }
+    union
+    {?s ?p ?ClasseConceito .
+     FILTER (isURI(?ClasseConceito) && contains(lcase(str(?ClasseConceito)), "foaf")) }
+}
 
