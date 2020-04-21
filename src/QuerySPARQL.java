@@ -1,12 +1,14 @@
 
 import com.ontotext.trree.util.convert.storage.PrettyPrinter;
 
+import org.apache.commons.beanutils.converters.URLConverter;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.*;
@@ -39,6 +41,8 @@ import org.slf4j.MarkerFactory;
 
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Iterator;
 
 import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
@@ -93,50 +97,7 @@ public class QuerySPARQL<iterator> {
             values = new String[result.getBindingNames().size()];
             classes = new String[result.getBindingNames().size()];
 
-
-
-            if (primeira) {
-
-                while (count < result.getBindingNames().size()) {
-                    System.out.println(result.getBindingNames().get(0));
-                    values[count] = String.valueOf(result.getBindingNames().get(count));
-                    results += values[count] + "\t";
-                    count++;
-                }
-                results += "\n";
-                primeira = false;
-
-            }
-
-            System.out.println(result.getBindingNames());
-            while (result.hasNext()) {
-                binding = result.next();
-                System.out.println(binding.size());
-
-                count = 0;
-                while (count < binding.size()) {
-                    System.out.println(binding.getValue(values[count]).toString());
-                    classes[count] = binding.getValue(values[count]).toString();
-                    count++;
-                }
-
-
-                for (String clas : classes) {
-                    results += clas + "\t";
-                }
-                results += "\n";
-                /*
-                try {
-                    FileUtils.writeStringToFile(saida,results);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
-
-            }
-            con.close();
-            escreveArquivo(results);
-
+            ModelBuilder modBuilder = new ModelBuilder();
 
             //cria repositório
 
@@ -190,13 +151,64 @@ public class QuerySPARQL<iterator> {
             RepositoryConnection repoCon = repository.getConnection();
 
 
+
+            //Fim dos processos de criação do repositório
+
+            if (primeira) {
+
+                while (count < result.getBindingNames().size()) {
+                    System.out.println(result.getBindingNames().get(0));
+                    values[count] = String.valueOf(result.getBindingNames().get(count));
+                    results += values[count] + "\t";
+                    count++;
+                }
+                results += "\n";
+                primeira = false;
+
+            }
+
+            System.out.println(result.getBindingNames());
+            while (result.hasNext()) {//Avança por cada linha dos resultados
+                binding = result.next();
+                System.out.println(binding.size());
+
+                count = 0;
+                while (count < binding.size()) {
+                    System.out.println(binding.getValue(values[count]).toString());
+                    classes[count] = binding.getValue(values[count]).toString();
+                    count++;
+                }
+
+                //modBuilder.subject(binding.getValue("DS").stringValue())
+
+
+
+                for (String clas : classes) {
+                    results += clas + "\t";
+                }
+                results += "\n";
+                /*
+                try {
+                    FileUtils.writeStringToFile(saida,results);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
+
+            }
+            con.close();
+            escreveArquivo(results);
+
+
+
+
             //        //Carregar dados
             //        repoCon.begin();
             //        Update updateOp = repoCon.prepareUpdate(QueryLanguage.SPARQL, classeConceito.stringValue());
             //        updateOp.execute();
 
 
-            carregaDados(repoCon);
+            //carregaDados(repoCon);
 
 
 
