@@ -49,7 +49,7 @@ public class QuerySPARQL<iterator> {
     static TupleQuery query;
     static File saida = new File("saida.txt");
     static String httpRepo = new String("http://192.168.1.102:7200/");
-    static String repoID = new String("D3");
+    static String repoID = new String("P1");
     static RepositoryConnection con;
     static BindingSet binding;
     private QuerySPARQL(){
