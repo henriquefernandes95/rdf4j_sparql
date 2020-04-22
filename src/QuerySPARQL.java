@@ -3,13 +3,12 @@ import com.ontotext.trree.util.convert.storage.PrettyPrinter;
 
 import org.apache.commons.beanutils.converters.URLConverter;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.DC;
+import org.eclipse.rdf4j.model.vocabulary.DCAT;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.Repository;
@@ -98,6 +97,7 @@ public class QuerySPARQL<iterator> {
             classes = new String[result.getBindingNames().size()];
 
             ModelBuilder modBuilder = new ModelBuilder();
+            ValueFactory factory = null;
 
             //cria repositório
 
@@ -149,7 +149,7 @@ public class QuerySPARQL<iterator> {
 
             //Conectar ao repositorio
             RepositoryConnection repoCon = repository.getConnection();
-
+            factory= repoCon.getValueFactory();//inicializa o value factory correspondente ao respositório criado
 
 
             //Fim dos processos de criação do repositório
@@ -180,6 +180,14 @@ public class QuerySPARQL<iterator> {
                 }
 
                 //modBuilder.subject(binding.getValue("DS").stringValue())
+                //Criando as triplas. Teste. Restringindo a cada caso
+                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+                    repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                }
+                if(binding.hasBinding(""))
 
 
 

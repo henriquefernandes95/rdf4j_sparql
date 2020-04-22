@@ -18,3 +18,59 @@ where {
 
 
         } order by ?DS
+#QUERY
+#Obtém as classes utilizadas por sujeitos e objetos anotadas com AGROVOC.
+PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseConceitoLabel2 where {
+    {
+    	service <http://192.168.1.102:7200/repositories/DN> {
+
+                ?s ?p ?o .
+                #Extrai sujeitos
+                FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "agrovoc")) .
+                #Esta string com endpoint pode ser parametrizada
+                BIND (uri("http://agrovoc.uniroma2.it/sparql") AS ?vEndpoint ) .
+
+    	}
+
+        service ?vEndpoint {
+            ?s skos:broader ?ClasseConceito1 .
+            ?ClasseConceito1 skos:prefLabel ?ClasseConceitoLabel1 .
+            ?s skos:closeMatch ?ClasseDBpedia .
+            FILTER (lang(?ClasseConceitoLabel1) = "pt" ) .
+        }
+        service <http://dbpedia.org/sparql> {
+            ?ClasseDBpedia rdf:type ?ClasseConceito2 .
+            ?ClasseConceito2 rdfs:label ?ClasseConceitoLabel2 .
+            FILTER (lang(?ClasseConceitoLabel2) = "pt" ) .
+        }
+}
+union {
+        service <http://192.168.1.102:7200/repositories/DN> {
+
+                ?s ?p ?o .
+                #Extrai objetos
+                FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "agrovoc")) .
+                #Esta string com endpoint pode ser parametrizada
+                BIND (uri("http://agrovoc.uniroma2.it/sparql") AS ?vEndpoint ) .
+
+        }
+
+        service ?vEndpoint {
+            ?o skos:broader ?ClasseConceito1 .
+            ?ClasseConceito1 skos:prefLabel ?ClasseConceitoLabel1 .
+            ?o skos:closeMatch ?ClasseDBpedia .
+            FILTER (lang(?ClasseConceitoLabel1) = "pt" ) .
+
+        }
+        service <http://dbpedia.org/sparql> {
+            ?ClasseDBpedia rdf:type ?ClasseConceito2 .
+            ?ClasseConceito2 rdfs:label ?ClasseConceitoLabel2 .
+            FILTER (lang(?ClasseConceitoLabel2) = "pt" ) .
+        }
+}
+} limit 10
