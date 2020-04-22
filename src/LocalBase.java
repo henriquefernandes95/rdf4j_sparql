@@ -10,13 +10,25 @@ import java.io.IOException;
 import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
 
 public class LocalBase {
-    public void LocalBase(){
-
+    private static Repository localRepo;
+    private static RepositoryConnection repCon;
+    public LocalBase(){
+        this.localRepo = new SailRepository(new MemoryStore());
+        this.repCon = localRepo.getConnection();
+        this.loadRDFData();
+    }
+    public int loadRDFData(){
+        try {
+            repCon.add(new File("metadata_from_portal.rdf"),"", RDFXML);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
     public static void main(String args[]){
         
-        Repository localRepo = new SailRepository(new MemoryStore());
-        RepositoryConnection repCon = localRepo.getConnection();
+
+
         try {
             repCon.add(new File("metadata_from_portal.rdf"),"", RDFXML);
         } catch (IOException e) {
