@@ -55,7 +55,7 @@ public class QuerySPARQL<iterator> {
     static String repoID = new String("P1");
     static RepositoryConnection con;
     static BindingSet binding;
-    static LocalBase locB = new LocalBase();//Base local na memória
+    static LocalBase locB;//Base local na memória
     private QuerySPARQL(){
 
     }
@@ -83,6 +83,7 @@ public class QuerySPARQL<iterator> {
         queries=fileAsString.split("#QUERY");//separador das consultas
         numQueries=queries.length;
 
+        locB = new LocalBase();
 
         while(current < numQueries) {
             count=0;
@@ -99,6 +100,7 @@ public class QuerySPARQL<iterator> {
 
             ModelBuilder modBuilder = new ModelBuilder();
             ValueFactory factory = null;
+            ValueFactory factoryLoc = null;
 
             //cria repositório
 
@@ -151,6 +153,7 @@ public class QuerySPARQL<iterator> {
             //Conectar ao repositorio
             RepositoryConnection repoCon = repository.getConnection();
             factory= repoCon.getValueFactory();//inicializa o value factory correspondente ao respositório criado
+            factoryLoc=locB.getConnection().getValueFactory();
 
 
             //Fim dos processos de criação do repositório
@@ -189,16 +192,16 @@ public class QuerySPARQL<iterator> {
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                 }*/
                 if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-                    locB.getConnection().add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
-                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
-                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                 }
-                locB.runQuery("select * where { ?s ?p ?o. }");
-                locB.printQueryResult();
 
 
-                if(binding.hasBinding(""))
+
+
+                //if(binding.hasBinding(""))
 
 
 
@@ -215,7 +218,7 @@ public class QuerySPARQL<iterator> {
 
 
             }
-            locB.finishConnection();
+
             con.close();
             escreveArquivo(results);
 
@@ -245,7 +248,10 @@ public class QuerySPARQL<iterator> {
 
             current++;
         }
+        locB.runQuery("select * where { ?s ?p ?o. }");
+        locB.printQueryResult();
 
+        locB.finishConnection();
 
 
     }
