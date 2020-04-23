@@ -13,11 +13,13 @@ import java.io.IOException;
 import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
 
 public class LocalBase {
-    private static Repository localRepo;
-    private static RepositoryConnection repCon;
+    private Repository localRepo;
+    private RepositoryConnection repCon;
     private TupleQuery query;
     private TupleQueryResult queryResult;
-    private static BindingSet bSet;
+    private BindingSet bSet;
+
+
     public LocalBase(){
         this.localRepo = new SailRepository(new MemoryStore());
         this.repCon = localRepo.getConnection();
@@ -47,7 +49,7 @@ public class LocalBase {
 
         while(queryResult.hasNext()){
             bSet=queryResult.next();
-            System.out.println(bSet.getValue(bSet.getBindingNames().toArray()[0].toString()) + "\t" + bSet.getValue(bSet.getBindingNames().toArray()[1].toString()) + "\t" + bSet.getValue(bSet.getBindingNames().toArray()[2].toString()) + "\n");
+            System.out.println(bSet.getValue(bSet.getBindingNames().toArray()[1].toString()) + "\t" + bSet.getValue(bSet.getBindingNames().toArray()[0].toString()) + "\t" + bSet.getValue(bSet.getBindingNames().toArray()[2].toString()) + "\n");
         }
     }
     public void finishConnection(){
