@@ -55,6 +55,7 @@ public class QuerySPARQL<iterator> {
     static String repoID = new String("P1");
     static RepositoryConnection con;
     static BindingSet binding;
+    static LocalBase locB = new LocalBase();//Base local na memória
     private QuerySPARQL(){
 
     }
@@ -181,12 +182,22 @@ public class QuerySPARQL<iterator> {
 
                 //modBuilder.subject(binding.getValue("DS").stringValue())
                 //Criando as triplas. Teste. Restringindo a cada caso
-                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+                /*if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
                     repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                }*/
+                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+                    locB.getConnection().add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    locB.getConnection().add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                 }
+                locB.runQuery("select * where { ?s ?p ?o. }");
+                locB.printQueryResult();
+
+
                 if(binding.hasBinding(""))
 
 
@@ -204,6 +215,7 @@ public class QuerySPARQL<iterator> {
 
 
             }
+            locB.finishConnection();
             con.close();
             escreveArquivo(results);
 
