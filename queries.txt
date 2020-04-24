@@ -27,7 +27,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseConceitoLabel2 where {
     {
-    	service <http://192.168.1.102:7200/repositories/DN> {
+    	service <http://192.168.1.102:7200/repositories/D1> {
 
                 ?s ?p ?o .
                 #Extrai sujeitos
@@ -50,7 +50,7 @@ select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseC
         }
 }
 union {
-        service <http://192.168.1.102:7200/repositories/DN> {
+        service <http://192.168.1.102:7200/repositories/D1> {
 
                 ?s ?p ?o .
                 #Extrai objetos
