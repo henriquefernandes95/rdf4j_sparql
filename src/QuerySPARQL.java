@@ -42,6 +42,7 @@ import org.slf4j.MarkerFactory;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
@@ -56,6 +57,12 @@ public class QuerySPARQL<iterator> {
     static RepositoryConnection con;
     static BindingSet binding;
     static LocalBase locB;//Base local na memória
+    static ArrayList<String> graphAdds = new ArrayList<String>();
+    static ArrayList<String> extraQueries = new ArrayList<String>();
+    static int numGraphs;
+    static int currGraph;
+    static int numExtQueires=0;
+
     private QuerySPARQL(){
 
     }
@@ -84,14 +91,34 @@ public class QuerySPARQL<iterator> {
         numQueries=queries.length;
 
         locB = new LocalBase();
-
+        currGraph=0;
         while(current < numQueries) {
             count=0;
             primeira=true;
             System.out.println("\n\n********\n\nComeçou\n\n********\n\n");
             iniciaRepo();
             //Realiza a consulta
-            query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[current]);
+            numGraphs=0;
+            while(current>1&&currGraph<numGraphs){
+
+                if(!(current >1)) {
+                    queries[current] = queries[current].replaceAll("#graphToQuery", graphAdds.get(currGraph) + "/");
+                }
+                else{
+                    extraQueries.add(queries[current].replaceAll("#graphToQuery", graphAdds.get(currGraph) + "/"));
+                }
+                System.out.println(queries[current]);
+                System.out.println("\n ***"+current+"***** \n");
+                currGraph++;
+                numQueries++;
+            }
+            if(current <=1){
+                query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[current]);
+            }
+            if(current>1){
+                query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
+            }
+
             TupleQueryResult result = null;
 
             result = query.evaluate();
@@ -190,6 +217,8 @@ public class QuerySPARQL<iterator> {
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    graphAdds.add(String.valueOf(binding.getValue("DS")));
+                    numGraphs++;
                 }
                 if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
                     locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
@@ -198,7 +227,12 @@ public class QuerySPARQL<iterator> {
                     locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                 }
 
-
+                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+                }
 
 
 
