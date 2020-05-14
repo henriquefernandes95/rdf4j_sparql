@@ -25,7 +25,6 @@ Ingrediente ativo (IA) = agente químico, físico ou biológico que confere efic
       <dct:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2019-10-19T00:00:00Z</dct:issued>
       <dct:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2019-10-19T00:00:00Z</dct:modified>
       <dct:language>pt_BR</dct:language>
-      <dct:license rdf:resource="http://www.opendefinition.org/licenses/cc-by"/>
       <dct:publisher>
         <foaf:Organization>
             <foaf:name>Ibama</foaf:name>
@@ -38,8 +37,7 @@ Ingrediente ativo (IA) = agente químico, físico ou biológico que confere efic
           <dct:title>Os 10 ingredientes ativos mais vendidos</dct:title>
           <dct:description>Químicos e Bioquímicos.</dct:description>
           <dcat:downloadURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://drive.google.com/open?id=1jmFdwJfMM-MJo8mbcwAAwf4ZDZ9ajexY</dcat:downloadURL>
-          <dcat:mediaType>RDF</dcat:mediaType>
-          <dct:license rdf:resource="http://www.opendefinition.org/licenses/cc-by"/>
+          <dct:format>RDF</dct:format>          
         </dcat:Distribution>
       </dcat:distribution>      
     </dcat:Dataset>
@@ -85,7 +83,7 @@ Ingrediente ativo (IA) = agente químico, físico ou biológico que confere efic
       <dct:language>pt_BR</dct:language>
       <dct:publisher>
         <foaf:Organization>
-            <foaf:name> International Agency for Research on Cancer</foaf:name>
+            <foaf:name>International Agency for Research on Cancer</foaf:name>
             <foaf:mbox>admin@iarc.org</foaf:mbox>
         </foaf:Organization>
       </dct:publisher>
@@ -95,6 +93,33 @@ Ingrediente ativo (IA) = agente químico, físico ou biológico que confere efic
           <dct:title>Classificação IARC - Perigo de Câncer</dct:title>
           <dct:description>Caracteristicas dos componentes quimicos relacionados com Cancer</dct:description>
           <dcat:downloadURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://drive.google.com/open?id=1WekgqiHm5oxw6hEpIB8ykqXNB_ZuZ7jO</dcat:downloadURL>
+          <dct:format>RDF</dct:format>
+        </dcat:Distribution>
+      </dcat:distribution>      
+    </dcat:Dataset>
+  </dcat:dataset>
+  <dcat:dataset>
+    <dcat:Dataset rdf:about="http://localhost/dataset/agrotoxicos-banidos-por-paises">
+      <dct:identifier>http://localhost/dataset/agrotoxicos-banidos-por-paises</dct:identifier>
+      <dct:title> Agrotoxicos Banidos por Paises</dct:title>
+      <dct:description>Extrato do dataset triplificado - Grupo GRECCO.</dct:description>
+      <dcat:keyword>agrotoxicos</dcat:keyword>
+      <dcat:keyword>banidos</dcat:keyword>
+      <dcat:keyword>proibidos</dcat:keyword>
+      <dct:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-10-29</dct:issued>
+      <dct:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2019-10-29</dct:modified>
+      <dct:language>pt_BR</dct:language>
+      <dct:publisher>
+        <foaf:Organization>
+            <foaf:name>Entidade_Reguladora</foaf:name>      
+        </foaf:Organization>
+      </dct:publisher>
+      <dcat:distribution>
+        <dcat:Distribution>
+          <dct:identifier>http://localhost/en/dataset/dataset/agrotoxicos-banidos-por-paises/resource/0</dct:identifier>
+          <dct:title>Agrotoxicos banidos por paises</dct:title>
+          <dct:description>Proibidos nos paises.</dct:description>
+          <dcat:downloadURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://drive.google.com/open?id=1T_KOx6daQhYskQTI37lsq7yosAqyz25a</dcat:downloadURL>
           <dct:format>RDF</dct:format>
         </dcat:Distribution>
       </dcat:distribution>      

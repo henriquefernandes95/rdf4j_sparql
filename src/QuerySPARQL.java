@@ -1,7 +1,3 @@
-
-import com.ontotext.trree.util.convert.storage.PrettyPrinter;
-
-import org.apache.commons.beanutils.converters.URLConverter;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.TreeModel;
@@ -16,32 +12,17 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
-import org.eclipse.rdf4j.repository.util.RDFInserter;
-import org.eclipse.rdf4j.repository.util.RDFLoader;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ontotext.graphdb.*;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParser;
-import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.rio.helpers.StatementCollector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
-
 
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -80,6 +61,7 @@ public class QuerySPARQL<iterator> {
         int count=0;
         int current = 1;
         int numQueries = 0;
+        int startQueryNumber;
         Iterator inter;
 
 
@@ -89,16 +71,17 @@ public class QuerySPARQL<iterator> {
         String fileAsString = dadosQuery();
         queries=fileAsString.split("#QUERY");//separador das consultas
         numQueries=queries.length;
-
+        startQueryNumber=numQueries;
         locB = new LocalBase();
         currGraph=0;
+        numGraphs=0;
         while(current < numQueries) {
             count=0;
             primeira=true;
             System.out.println("\n\n********\n\nComeçou\n\n********\n\n");
             iniciaRepo();
             //Realiza a consulta
-            numGraphs=0;
+
             while(current>1&&currGraph<numGraphs){
 
                 if(!(current >1)) {
@@ -106,19 +89,27 @@ public class QuerySPARQL<iterator> {
                 }
                 else{
                     extraQueries.add(queries[current].replaceAll("#graphToQuery", graphAdds.get(currGraph) + "/"));
+                    //numQueries++;
+
                 }
                 System.out.println(queries[current]);
                 System.out.println("\n ***"+current+"***** \n");
                 currGraph++;
-                numQueries++;
+
             }
+            if(current==2){
+                numQueries=(startQueryNumber-2)*(numGraphs)+1;
+            }
+
+
             if(current <=1){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[current]);
             }
-            if(current>1){
+            if(current>1&&current<6){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
+                System.out.println("\n\n EXECUÇÂO \n\n");
             }
-
+            //currGraph=0;
             TupleQueryResult result = null;
 
             result = query.evaluate();
@@ -219,6 +210,7 @@ public class QuerySPARQL<iterator> {
                     repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
                     graphAdds.add(String.valueOf(binding.getValue("DS")));
                     numGraphs++;
+                    System.out.println("\nNUM GRAPHS"+numGraphs);
                 }
                 if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
                     locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
@@ -354,6 +346,7 @@ public class QuerySPARQL<iterator> {
 
         return 0;
     }
+
 
 
 
