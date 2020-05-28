@@ -1,3 +1,11 @@
+/*
+Projeto de suporte a triplificação
+Idealized by: Gláucia Botelho de Figueiredo
+Coded by: Henrique Fernandes Rodrigues
+Started at: 18/03/2020
+Java 11.0.7
+IntelliJ IDEA 2020.1
+*/
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;

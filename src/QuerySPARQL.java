@@ -1,3 +1,13 @@
+/*
+Projeto de suporte a triplificação
+Idealised by: Gláucia Botelho de Figueiredo
+Coded by: Henrique Fernandes Rodrigues
+Started at: 18/03/2020
+Java 11.0.7
+IntelliJ IDEA 2020.1
+*/
+
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.TreeModel;
@@ -43,6 +53,7 @@ public class QuerySPARQL<iterator> {
     static int numGraphs;
     static int currGraph;
     static int numExtQueires=0;
+    static String tempGraphName=null;
 
     private QuerySPARQL(){
 
@@ -85,10 +96,12 @@ public class QuerySPARQL<iterator> {
             while(current>1&&currGraph<numGraphs){
 
                 if(!(current >1)) {
-                    queries[current] = queries[current].replaceAll("#graphToQuery", graphAdds.get(currGraph) + "/");
+                    tempGraphName =  new String(graphAdds.get(currGraph));
+                    queries[current] = queries[current].replaceAll("#graphToQuery",  tempGraphName + "/");
                 }
                 else{
-                    extraQueries.add(queries[current].replaceAll("#graphToQuery", graphAdds.get(currGraph) + "/"));
+                    tempGraphName =  new String(graphAdds.get(currGraph));
+                    extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + "/"));
                     //numQueries++;
 
                 }
@@ -203,35 +216,14 @@ public class QuerySPARQL<iterator> {
 
                 //modBuilder.subject(binding.getValue("DS").stringValue())
                 //Criando as triplas. Teste. Restringindo a cada caso
-                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-                    repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
-                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
-                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                    repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                    graphAdds.add(String.valueOf(binding.getValue("DS")));
-                    numGraphs++;
-                    System.out.println("\nNUM GRAPHS"+numGraphs);
-                }
-                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                }
 
-                if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                    locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-                }
-
+                triplifica(repoCon, factory, factoryLoc);
 
 
                 //if(binding.hasBinding(""))
 
-
-
+                results+=tempGraphName+"\n";
+                //results+=graphAdds.get(currGraph).toString();
                 for (String clas : classes) {
                     results += clas + "\t";
                 }
@@ -276,7 +268,7 @@ public class QuerySPARQL<iterator> {
             current++;
         }
         locB.runQuery("select * where { ?s ?p ?o. }");
-        locB.printQueryResult();
+        //locB.printQueryResult();
 
         locB.finishConnection();
 
@@ -347,6 +339,28 @@ public class QuerySPARQL<iterator> {
         return 0;
     }
 
+    private static int triplifica(RepositoryConnection repoCon, ValueFactory factory, ValueFactory factoryLoc){
+        if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+            repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+            graphAdds.add(String.valueOf(binding.getValue("DS")));
+            numGraphs++;//Define o número de grafos a partir da consulta inicial
+            System.out.println("\nNUM GRAPHS"+numGraphs);
+        }
+        if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+            locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
+            locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
+            locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+            locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+        }
+        if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")){
+            repoCon.add(factory.createIRI(tempGraphName), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()));
+        }
+
+        return 0;
+    }
 
 
 
