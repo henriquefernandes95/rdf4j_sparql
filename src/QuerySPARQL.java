@@ -74,6 +74,7 @@ public class QuerySPARQL<iterator> {
         int numQueries = 0;
         int startQueryNumber;
         Iterator inter;
+        ArrayList<String> tempCurGraphs = new ArrayList<String>();
 
 
 
@@ -86,6 +87,7 @@ public class QuerySPARQL<iterator> {
         locB = new LocalBase();
         currGraph=0;
         numGraphs=0;
+        tempCurGraphs = new String[];
         while(current < numQueries) {
             count=0;
             primeira=true;
@@ -97,6 +99,7 @@ public class QuerySPARQL<iterator> {
 
                 if(!(current >1)) {
                     tempGraphName =  new String(graphAdds.get(currGraph));
+                    tempCurGraphs.add(tempGraphName);
                     queries[current] = queries[current].replaceAll("#graphToQuery",  tempGraphName + "/");
                 }
                 else{
