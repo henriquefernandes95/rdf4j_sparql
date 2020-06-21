@@ -54,6 +54,8 @@ public class QuerySPARQL<iterator> {
     static int currGraph;
     static int numExtQueires=0;
     static String tempGraphName=null;
+    static ArrayList<String> tempCurGraphs = new ArrayList<String>();
+    static String curGraphQueryURI = new String();
 
     private QuerySPARQL(){
 
@@ -74,7 +76,7 @@ public class QuerySPARQL<iterator> {
         int numQueries = 0;
         int startQueryNumber;
         Iterator inter;
-        ArrayList<String> tempCurGraphs = new ArrayList<String>();
+
 
 
 
@@ -87,7 +89,7 @@ public class QuerySPARQL<iterator> {
         locB = new LocalBase();
         currGraph=0;
         numGraphs=0;
-        tempCurGraphs = new String[];
+
         while(current < numQueries) {
             count=0;
             primeira=true;
@@ -99,11 +101,12 @@ public class QuerySPARQL<iterator> {
 
                 if(!(current >1)) {
                     tempGraphName =  new String(graphAdds.get(currGraph));
-                    tempCurGraphs.add(tempGraphName);
+
                     queries[current] = queries[current].replaceAll("#graphToQuery",  tempGraphName + "/");
                 }
                 else{
                     tempGraphName =  new String(graphAdds.get(currGraph));
+                    tempCurGraphs.add(tempGraphName);
                     extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + "/"));
                     //numQueries++;
 
@@ -124,6 +127,14 @@ public class QuerySPARQL<iterator> {
             if(current>1&&current<6){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
                 System.out.println("\n\n EXECUÇÂO \n\n");
+                for (String element : tempCurGraphs){
+                    System.out.println("\n"+element+"\n");
+                    if(extraQueries.get(current-2).toString().contains((CharSequence) element)){
+                        curGraphQueryURI=element;
+                        System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
+                    }
+                }
+
             }
             //currGraph=0;
             TupleQueryResult result = null;
@@ -240,7 +251,7 @@ public class QuerySPARQL<iterator> {
 
 
             }
-
+            curGraphQueryURI="";//Esvazia a URI para que a nova possa ser obtida e testada
             con.close();
             escreveArquivo(results);
 
@@ -347,8 +358,8 @@ public class QuerySPARQL<iterator> {
             repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-            graphAdds.add(String.valueOf(binding.getValue("DS")));
+            //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+            graphAdds.add(String.valueOf(binding.getValue("DS")));//adiciona as URIs dos grafos
             numGraphs++;//Define o número de grafos a partir da consulta inicial
             System.out.println("\nNUM GRAPHS"+numGraphs);
         }
@@ -358,8 +369,9 @@ public class QuerySPARQL<iterator> {
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
         }
-        if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")){
-            repoCon.add(factory.createIRI(tempGraphName), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()));
+        if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")&&(!curGraphQueryURI.equals(""))){
+            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()));
+
         }
 
         return 0;
