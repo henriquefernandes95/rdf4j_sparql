@@ -93,7 +93,7 @@ public class QuerySPARQL<iterator> {
         while(current < numQueries) {
             count=0;
             primeira=true;
-            System.out.println("\n\n********\n\nComeçou\n\n********\n\n");
+            //System.out.println("\n\n********\n\nComeçou\n\n********\n\n");
             iniciaRepo();
             //Realiza a consulta
 
@@ -111,8 +111,8 @@ public class QuerySPARQL<iterator> {
                     //numQueries++;
 
                 }
-                System.out.println(queries[current]);
-                System.out.println("\n ***"+current+"***** \n");
+                //System.out.println(queries[current]);
+                //System.out.println("\n ***"+current+"***** \n");
                 currGraph++;
 
             }
@@ -126,12 +126,12 @@ public class QuerySPARQL<iterator> {
             }
             if(current>1&&current<6){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
-                System.out.println("\n\n EXECUÇÂO \n\n");
+                //System.out.println("\n\n EXECUÇÂO \n\n");
                 for (String element : tempCurGraphs){
-                    System.out.println("\n"+element+"\n");
+                    //System.out.println("\n"+element+"\n");
                     if(extraQueries.get(current-2).toString().contains((CharSequence) element)){
                         curGraphQueryURI=element;
-                        System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
+                        //System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
                     }
                 }
 
@@ -206,7 +206,7 @@ public class QuerySPARQL<iterator> {
             if (primeira) {
 
                 while (count < result.getBindingNames().size()) {
-                    System.out.println(result.getBindingNames().get(0));
+                    //System.out.println(result.getBindingNames().get(0));
                     values[count] = String.valueOf(result.getBindingNames().get(count));
                     results += values[count] + "\t";
                     count++;
@@ -219,7 +219,7 @@ public class QuerySPARQL<iterator> {
             System.out.println(result.getBindingNames());
             while (result.hasNext()) {//Avança por cada linha dos resultados
                 binding = result.next();
-                System.out.println(binding.size());
+                //System.out.println(binding.size());
 
                 count = 0;
                 while (count < binding.size()) {
@@ -282,7 +282,8 @@ public class QuerySPARQL<iterator> {
             current++;
         }
         locB.runQuery("select * where { ?s ?p ?o. }");
-        //locB.printQueryResult();
+        locB.printQueryResult();
+        locB.
 
         locB.finishConnection();
 
@@ -361,7 +362,7 @@ public class QuerySPARQL<iterator> {
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             graphAdds.add(String.valueOf(binding.getValue("DS")));//adiciona as URIs dos grafos
             numGraphs++;//Define o número de grafos a partir da consulta inicial
-            System.out.println("\nNUM GRAPHS"+numGraphs);
+            //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
         if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
