@@ -283,7 +283,7 @@ public class QuerySPARQL<iterator> {
         }
         locB.runQuery("select * where { ?s ?p ?o. }");
         locB.printQueryResult();
-        locB.
+
 
         locB.finishConnection();
 
