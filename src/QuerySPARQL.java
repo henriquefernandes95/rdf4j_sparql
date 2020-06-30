@@ -36,6 +36,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static org.eclipse.rdf4j.rio.RDFFormat.NTRIPLES;
 import static org.eclipse.rdf4j.rio.RDFFormat.RDFXML;
 
 
@@ -56,6 +57,8 @@ public class QuerySPARQL<iterator> {
     static String tempGraphName=null;
     static ArrayList<String> tempCurGraphs = new ArrayList<String>();
     static String curGraphQueryURI = new String();
+    //Teste de carregamento
+    static RepositoryConnection repoCon_test=null;
 
     private QuerySPARQL(){
 
@@ -89,6 +92,8 @@ public class QuerySPARQL<iterator> {
         locB = new LocalBase();
         currGraph=0;
         numGraphs=0;
+
+        load_data();
 
         while(current < numQueries) {
             count=0;
@@ -330,6 +335,39 @@ public class QuerySPARQL<iterator> {
         return sb.toString();
     }
 
+    private static String dadosTriplas(){//Obtém os dados de quey do arquivo
+        InputStream stream = null;
+        String line=null;
+        BufferedReader buf = null;
+        //Carrega as consultas do arquivo
+        try {
+            stream = new FileInputStream(new File("triple_data/load_list.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        buf = new BufferedReader(new InputStreamReader(stream));
+        try {
+            line = buf.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Constroi a string com o conteúdo do arquivo
+        StringBuilder sb = new StringBuilder();
+
+
+        while(line != null){
+            sb.append(line).append("\n");
+            try {
+                line = buf.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String fileAsString = sb.toString();
+        return sb.toString();
+    }
+
     private static int escreveArquivo(String cont){
         try{
             FileUtils.writeStringToFile(saida,cont);
@@ -377,7 +415,80 @@ public class QuerySPARQL<iterator> {
 
         return 0;
     }
+    private static int load_data(){
+        String fileAsString_test = dadosTriplas();
+        ValueFactory factory_test = null;
+        InputStream config_test = null;
+        RDFParser rdfParser_test = null;
+        TreeModel graph_test = new TreeModel();
+        String[] prefix=fileAsString_test.split("(.*)#URL");//separador das consultas
+        String[] arquivos=fileAsString_test.split("#URL(.*)");
+        int index=0;
 
+
+        Model model_test = graph_test.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
+
+
+        RepositoryManager manager_test = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
+        manager_test.init();
+        manager_test.getAllRepositories();
+
+        try {
+
+            config_test = new FileInputStream(new File("triple_data/repo-defaults_test.ttl"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        rdfParser_test = Rio.createParser(RDFFormat.TURTLE);
+        rdfParser_test.setRDFHandler(new StatementCollector(graph_test));
+
+        try {
+            rdfParser_test.parse(config_test, RepositoryConfigSchema.NAMESPACE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            config_test.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //
+
+
+        //Obtendo o repositório como recurso
+        Resource repoNode_test = Models.subject(graph_test.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY)).orElseThrow(() -> new RuntimeException("Oops, no <http://www.openrdf.org/config/repository#> subject found!"));
+
+
+        //Adicionando as configurações
+        RepositoryConfig configObj = RepositoryConfig.create(graph_test, repoNode_test);
+        manager_test.addRepositoryConfig(configObj);
+
+
+        //Obter o repositorio criado
+        Repository repository_test = manager_test.getRepository("graphdb-repo-test");
+
+        //Conectar ao repositori
+        repoCon_test = repository_test.getConnection();
+        factory_test= repoCon_test.getValueFactory();//inicializa o value factory correspondente ao respositório criado
+
+        while (index<arquivos.length-1) {
+            System.out.println(index+"\n"+arquivos.length);
+            try {
+                System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
+                //System.out.println("\n"+prefix[index]);
+                repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            index++;
+        }
+
+
+        return 0;
+
+    }
 
 
 

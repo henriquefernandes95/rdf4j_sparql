@@ -74,3 +74,47 @@ union {
         }
 }
 }
+#QUERY
+#Obtém as classes utilizadas por sujeitos e objetos anotadas com DBPEDIA.
+PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select distinct ?ClasseConceito ?ClasseConceitoLabel
+where {
+    	{service <http://192.168.1.102:7200/repositories/DNN> {
+        	graph <#graphToQuery> {
+                ?s ?p ?o .
+                #Extrai sujeitos
+                FILTER (isURI(?s) && !(strstarts(str(?s), str("http://www.w3.org"))) && contains(str(?s), "dbpedia")) .
+                BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+                BIND (uri(replace(str(?s),"page","resource")) AS ?vSuj) .
+        	}
+    	}
+
+        service ?vEndpoint {
+            ?vSuj rdf:type ?ClasseConceito .
+            ?ClasseConceito rdf:type owl:Class .
+            ?ClasseConceito rdfs:label ?ClasseConceitoLabel .
+            FILTER (lang(?ClasseConceitoLabel) = "pt" ) .
+        }
+	}
+union {
+        service <http://192.168.1.102:7200/repositories/DNN> {
+            graph <#graphToQuery> {
+                ?s ?p ?o .
+                #Extrai objetos
+                FILTER (isURI(?o) && !(strstarts(str(?o), str("http://www.w3.org"))) && contains(str(?o), "dbpedia")) .                   BIND (uri("http://dbpedia.org/sparql") AS ?vEndpoint ) .
+                BIND (uri(replace(str(?o),"page","resource")) AS ?vObj) .
+			}
+        }
+
+
+        service ?vEndpoint {
+            ?vObj rdf:type ?ClasseConceito .
+        	?ClasseConceito rdf:type owl:Class .
+			?ClasseConceito rdfs:label ?ClasseConceitoLabel .
+            FILTER (lang(?ClasseConceitoLabel) = "pt" ) .
+    	}
+	}
+}
