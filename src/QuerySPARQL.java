@@ -424,6 +424,7 @@ public class QuerySPARQL<iterator> {
         String[] prefix=fileAsString_test.split("(.*)#URL");//separador das consultas
         String[] arquivos=fileAsString_test.split("#URL(.*)");
         int index=0;
+        ModelBuilder mBuilder = new ModelBuilder();
 
 
         Model model_test = graph_test.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
@@ -469,7 +470,7 @@ public class QuerySPARQL<iterator> {
         //Obter o repositorio criado
         Repository repository_test = manager_test.getRepository("graphdb-repo-test");
 
-        //Conectar ao repositori
+        //Conectar ao repositorio
         repoCon_test = repository_test.getConnection();
         factory_test= repoCon_test.getValueFactory();//inicializa o value factory correspondente ao respositório criado
 
@@ -479,6 +480,7 @@ public class QuerySPARQL<iterator> {
                 System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
                 //System.out.println("\n"+prefix[index]);
                 repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
+                repoCon_test.
             } catch (IOException e) {
                 e.printStackTrace();
             }
