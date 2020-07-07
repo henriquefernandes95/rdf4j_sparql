@@ -9,6 +9,7 @@ IntelliJ IDEA 2020.1
 
 
 import org.apache.commons.io.FileUtils;
+import org.apache.zookeeper.server.persistence.Util;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -93,7 +94,7 @@ public class QuerySPARQL<iterator> {
         currGraph=0;
         numGraphs=0;
 
-        load_data();
+        load_data_test();
 
         while(current < numQueries) {
             count=0;
@@ -480,11 +481,95 @@ public class QuerySPARQL<iterator> {
                 System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
                 //System.out.println("\n"+prefix[index]);
                 repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
-                repoCon_test.
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             index++;
+        }
+
+
+        return 0;
+
+    }
+
+    private static int load_data_test(){
+        String fileAsString_test = dadosTriplas();
+        ValueFactory factory_test = null;
+        InputStream config_test = null;
+        RDFParser rdfParser_test = null;
+        TreeModel graph_test = new TreeModel();
+        String[] prefix=fileAsString_test.split("(.*)#URL");//separador das consultas
+        String[] arquivos=fileAsString_test.split("#URL(.*)");
+        int index=0;
+        ModelBuilder mBuilder = new ModelBuilder();
+        Model model;
+
+        while (index<arquivos.length-1) {
+
+            mBuilder.namedGraph(prefix[index+1]);
+
+            model=mBuilder.build();
+
+            Model model_test = model.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
+
+
+            RepositoryManager manager_test = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
+            manager_test.init();
+            manager_test.getAllRepositories();
+
+            try {
+
+                config_test = new FileInputStream(new File("triple_data/repo-defaults_test.ttl"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            rdfParser_test = Rio.createParser(RDFFormat.TURTLE);
+            rdfParser_test.setRDFHandler(new StatementCollector(model));
+
+            try {
+                rdfParser_test.parse(config_test, RepositoryConfigSchema.NAMESPACE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            try {
+                config_test.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //
+
+
+            //Obtendo o repositório como recurso
+            Resource repoNode_test = Models.subject(model.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY)).orElseThrow(() -> new RuntimeException("Oops, no <http://www.openrdf.org/config/repository#> subject found!"));
+
+
+            //Adicionando as configurações
+            RepositoryConfig configObj = RepositoryConfig.create(model, repoNode_test);
+            manager_test.addRepositoryConfig(configObj);
+
+
+            //Obter o repositorio criado
+            Repository repository_test = manager_test.getRepository("graphdb-repo-test");
+
+            //Conectar ao repositorio
+            repoCon_test = repository_test.getConnection();
+            factory_test= repoCon_test.getValueFactory();//inicializa o value factory correspondente ao respositório criado
+
+
+            System.out.println(index+"\n"+arquivos.length);
+            try {
+                System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
+                //System.out.println("\n"+prefix[index]);
+                repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), "", NTRIPLES);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            index++;
+            repoCon_test.close();
         }
 
 
