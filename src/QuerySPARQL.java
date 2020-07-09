@@ -29,6 +29,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.LoadQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +95,11 @@ public class QuerySPARQL<iterator> {
         currGraph=0;
         numGraphs=0;
 
-        load_data_test();
+        try {
+            load_data();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         while(current < numQueries) {
             count=0;
@@ -416,7 +421,9 @@ public class QuerySPARQL<iterator> {
 
         return 0;
     }
-    private static int load_data(){
+    private static int load_data()throws IOException{
+        TupleQuery loadQuery;
+        File triplas;
         String fileAsString_test = dadosTriplas();
         ValueFactory factory_test = null;
         InputStream config_test = null;
@@ -477,14 +484,22 @@ public class QuerySPARQL<iterator> {
 
         while (index<arquivos.length-1) {
             System.out.println(index+"\n"+arquivos.length);
-            try {
+            triplas =  new File("triple_data/"+arquivos[index].replaceAll("\n",""));
+            System.out.println("/n"+triplas.getAbsolutePath().replaceAll("\\\\","/"));
+            //loadQuery=repoCon_test.prepareQuery(QueryLanguage.SPARQL, "load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
+            loadQuery= repoCon_test.prepareTupleQuery("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
+            //loadQuery.p("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
+            loadQuery.evaluate();
+            //try {
+
                 System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
                 //System.out.println("\n"+prefix[index]);
-                repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
+                //repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            //} catch (IOException e) {
+              //  e.printStackTrace();
+            //}
             index++;
         }
 
