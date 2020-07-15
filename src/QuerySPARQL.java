@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.util.URIUtil;
 import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.DCAT;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -22,6 +23,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
+import org.eclipse.rdf4j.repository.http.HTTPGraphQuery;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
@@ -30,8 +32,10 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.LoadQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.util.UriEncoder;
 
 
 import java.io.*;
@@ -422,7 +426,7 @@ public class QuerySPARQL<iterator> {
         return 0;
     }
     private static int load_data()throws IOException{
-        TupleQuery loadQuery;
+        Update lquery = null;
         File triplas;
         String fileAsString_test = dadosTriplas();
         ValueFactory factory_test = null;
@@ -486,13 +490,18 @@ public class QuerySPARQL<iterator> {
             System.out.println(index+"\n"+arquivos.length);
             triplas =  new File("triple_data/"+arquivos[index].replaceAll("\n",""));
             System.out.println("/n"+triplas.getAbsolutePath().replaceAll("\\\\","/"));
-            //loadQuery=repoCon_test.prepareQuery(QueryLanguage.SPARQL, "load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
-            loadQuery= repoCon_test.prepareTupleQuery("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
+            lquery=repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
+            //loadQuery= repoCon_test.prepareTupleQuery("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
+            System.out.println("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
+            lquery.execute();
+            //lquery = repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load"+ UriEncoder.encode("<file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/"))+"> into graph"+ UriEncoder.encode("<"+prefix[index+1]+">"));
+            //lquery = repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load <file:///C:/Users/Henrique/Desktop/triple_test.nt> into graph <http://test.org>");
+            //lquery.execute();
             //loadQuery.p("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
-            loadQuery.evaluate();
+            //loadQuery.evaluate();
             //try {
 
-                System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
+                //System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
                 //System.out.println("\n"+prefix[index]);
                 //repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
 
