@@ -11,6 +11,7 @@ IntelliJ IDEA 2020.1
 import org.apache.commons.io.FileUtils;
 import org.apache.zookeeper.server.persistence.Util;
 import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
@@ -403,23 +404,28 @@ public class QuerySPARQL<iterator> {
     }
 
     private static int triplifica(RepositoryConnection repoCon, ValueFactory factory, ValueFactory factoryLoc){
+
+        IRI grafoClasses = factory.createIRI("http://example.org/GrafoClasses/");
         if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-            repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
+            repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()), grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET,grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.HAS_DISTRIBUTION,grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.TITLE, factory.createLiteral(binding.getValue("titleDS").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("id").stringValue()),DCAT.DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             graphAdds.add(String.valueOf(binding.getValue("DS")));//adiciona as URIs dos grafos
             numGraphs++;//Define o número de grafos a partir da consulta inicial
             //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
-        if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
+        /*if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()));
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET);
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             locB.getConnection().add(factoryLoc.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-        }
+        }*/
         if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")&&(!curGraphQueryURI.equals(""))){
-            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()));
+            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()),grafoClasses);
 
         }
 
@@ -484,7 +490,6 @@ public class QuerySPARQL<iterator> {
 
         //Conectar ao repositorio
         repoCon_test = repository_test.getConnection();
-        factory_test= repoCon_test.getValueFactory();//inicializa o value factory correspondente ao respositório criado
 
         while (index<arquivos.length-1) {
             System.out.println(index+"\n"+arquivos.length);
@@ -494,22 +499,8 @@ public class QuerySPARQL<iterator> {
             //loadQuery= repoCon_test.prepareTupleQuery("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
             System.out.println("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
             lquery.execute();
-            //lquery = repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load"+ UriEncoder.encode("<file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/"))+"> into graph"+ UriEncoder.encode("<"+prefix[index+1]+">"));
-            //lquery = repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load <file:///C:/Users/Henrique/Desktop/triple_test.nt> into graph <http://test.org>");
-            //lquery.execute();
-            //loadQuery.p("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
-            //loadQuery.evaluate();
-            //try {
-
-                //System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
-                //System.out.println("\n"+prefix[index]);
-                //repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), prefix[index], NTRIPLES);
-
-
-            //} catch (IOException e) {
-              //  e.printStackTrace();
-            //}
             index++;
+            //TODO Deletar os dados do repositorio
         }
 
 
@@ -517,89 +508,6 @@ public class QuerySPARQL<iterator> {
 
     }
 
-    private static int load_data_test(){
-        String fileAsString_test = dadosTriplas();
-        ValueFactory factory_test = null;
-        InputStream config_test = null;
-        RDFParser rdfParser_test = null;
-        TreeModel graph_test = new TreeModel();
-        String[] prefix=fileAsString_test.split("(.*)#URL");//separador das consultas
-        String[] arquivos=fileAsString_test.split("#URL(.*)");
-        int index=0;
-        ModelBuilder mBuilder = new ModelBuilder();
-        Model model;
-
-        while (index<arquivos.length-1) {
-
-            mBuilder.namedGraph(prefix[index+1]);
-
-            model=mBuilder.build();
-
-            Model model_test = model.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
-
-
-            RepositoryManager manager_test = RepositoryProvider.getRepositoryManager("http://192.168.1.102:7200");
-            manager_test.init();
-            manager_test.getAllRepositories();
-
-            try {
-
-                config_test = new FileInputStream(new File("triple_data/repo-defaults_test.ttl"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            rdfParser_test = Rio.createParser(RDFFormat.TURTLE);
-            rdfParser_test.setRDFHandler(new StatementCollector(model));
-
-            try {
-                rdfParser_test.parse(config_test, RepositoryConfigSchema.NAMESPACE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            try {
-                config_test.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //
-
-
-            //Obtendo o repositório como recurso
-            Resource repoNode_test = Models.subject(model.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY)).orElseThrow(() -> new RuntimeException("Oops, no <http://www.openrdf.org/config/repository#> subject found!"));
-
-
-            //Adicionando as configurações
-            RepositoryConfig configObj = RepositoryConfig.create(model, repoNode_test);
-            manager_test.addRepositoryConfig(configObj);
-
-
-            //Obter o repositorio criado
-            Repository repository_test = manager_test.getRepository("graphdb-repo-test");
-
-            //Conectar ao repositorio
-            repoCon_test = repository_test.getConnection();
-            factory_test= repoCon_test.getValueFactory();//inicializa o value factory correspondente ao respositório criado
-
-
-            System.out.println(index+"\n"+arquivos.length);
-            try {
-                System.out.println("triple_data/"+arquivos[index].replaceAll("\n","")+"\n");
-                //System.out.println("\n"+prefix[index]);
-                repoCon_test.add(new File(new String("triple_data/"+arquivos[index].replaceAll("\n",""))), "", NTRIPLES);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            index++;
-            repoCon_test.close();
-        }
-
-
-        return 0;
-
-    }
 
 
 
