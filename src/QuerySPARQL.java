@@ -143,6 +143,7 @@ public class QuerySPARQL<iterator> {
             if(current>1&&current<6){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
                 //System.out.println("\n\n EXECUÇÂO \n\n");
+                System.out.println(extraQueries.get(current-2).toString());
                 for (String element : tempCurGraphs){
                     //System.out.println("\n"+element+"\n");
                     if(extraQueries.get(current-2).toString().contains((CharSequence) element)){
@@ -414,7 +415,8 @@ public class QuerySPARQL<iterator> {
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.TITLE, factory.createLiteral(binding.getValue("titleDS").stringValue()),grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("id").stringValue()),DCAT.DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-            graphAdds.add(String.valueOf(binding.getValue("DS")));//adiciona as URIs dos grafos
+            graphAdds.add((binding.getValue("id").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
+            System.out.println("\n"+binding.getValue("id").stringValue().replaceAll("\"","")+"\n");
             numGraphs++;//Define o número de grafos a partir da consulta inicial
             //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
