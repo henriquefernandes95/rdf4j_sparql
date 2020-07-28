@@ -1,23 +1,20 @@
 #QUERY
+#Extração de Metadados serializados anotados com DCAT
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX dct: <http://purl.org/dc/terms/>
-select ?Portal ?DS ?titleDS ?id ?endArquivo ?publicador ?nomeOrg
-
+select ?portal ?DS ?titleDS ?publicador ?nomeOrg ?idDistrib ?titleDistrib ?endArquivo
 where {
-        	?Portal dcat:dataset ?DS .
-            ?DS dct:title ?titleDS .
-        	?DS dcat:distribution ?x .
-            ?x dct:identifier ?id .
-            ?x dcat:downloadURL ?endArquivo .
-        	?DS dct:publisher ?y .
- 			?y rdf:type ?publicador .
-        	?y foaf:name ?nome.
-        	BIND(CONCAT("http://", encode_for_uri(?nome)) AS ?nomeOrg ) .
+        ?portal dcat:dataset ?DS .
+        ?DS dct:title ?titleDS .
+        ?DS dct:publisher ?publicador .
+        ?DS dcat:distribution ?idDistrib .
+        ?idDistrib dct:title ?titleDistrib .
+        ?distrib dcat:downloadURL ?endArquivo .
+        ?publicador foaf:name ?nomeOrg.
 
-
-        } order by ?DS
+}
 #QUERY
 #Obtém as classes utilizadas por sujeitos e objetos anotadas com AGROVOC.
 PREFIX lodbr: <http://lodbr.ufrj.br/agrotoxicos/propriedade/>

@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.util.URIUtil;
 import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.DCAT;
+import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.Repository;
@@ -52,7 +53,7 @@ public class QuerySPARQL<iterator> {
     static TupleQuery query;
     static File saida = new File("saida.txt");
     static String httpRepo = new String("http://192.168.1.102:7200/");
-    static String repoID = new String("P1");
+    static String repoID = new String("T0");
     static RepositoryConnection con;
     static BindingSet binding;
     static LocalBase locB;//Base local na memória
@@ -408,15 +409,16 @@ public class QuerySPARQL<iterator> {
 
         IRI grafoClasses = factory.createIRI("http://example.org/GrafoClasses/");
         if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-            repoCon.add(factory.createIRI(binding.getValue("nomeOrg").stringValue()), RDF.TYPE, factory.createIRI(binding.getValue("publicador").stringValue()), grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("publicador").stringValue()), RDF.TYPE, FOAF.ORGANIZATION, grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("publicador").stringValue()), FOAF.NAME, factory.createLiteral(binding.getValue("titleDistrib").stringValue()), grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET,grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("nomeOrg").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("publicador").stringValue()),grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.HAS_DISTRIBUTION,grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.TITLE, factory.createLiteral(binding.getValue("titleDS").stringValue()),grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("id").stringValue()),DCAT.DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()),DCAT.DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
-            graphAdds.add((binding.getValue("id").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
-            System.out.println("\n"+binding.getValue("id").stringValue().replaceAll("\"","")+"\n");
+            graphAdds.add((binding.getValue("idDistrib").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
+            System.out.println("\n"+binding.getValue("idDistrib").stringValue().replaceAll("\"","")+"\n");
             numGraphs++;//Define o número de grafos a partir da consulta inicial
             //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
