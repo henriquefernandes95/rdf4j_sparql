@@ -119,12 +119,12 @@ public class QuerySPARQL<iterator> {
                 if(!(current >1)) {
                     tempGraphName =  new String(graphAdds.get(currGraph));
 
-                    queries[current] = queries[current].replaceAll("#graphToQuery",  tempGraphName + "/");
+                    queries[current] = queries[current].replaceAll("#graphToQuery",  tempGraphName + "");
                 }
                 else{
                     tempGraphName =  new String(graphAdds.get(currGraph));
                     tempCurGraphs.add(tempGraphName);
-                    extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + "/"));
+                    extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
                     //numQueries++;
 
                 }
@@ -413,9 +413,9 @@ public class QuerySPARQL<iterator> {
             repoCon.add(factory.createIRI(binding.getValue("publicador").stringValue()), FOAF.NAME, factory.createLiteral(binding.getValue("titleDistrib").stringValue()), grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET,grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("publicador").stringValue()),grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.HAS_DISTRIBUTION,grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()), RDF.TYPE, DCAT.DISTRIBUTION,grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.TITLE, factory.createLiteral(binding.getValue("titleDS").stringValue()),grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()),DCAT.DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()),DCAT.HAS_DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             graphAdds.add((binding.getValue("idDistrib").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
             System.out.println("\n"+binding.getValue("idDistrib").stringValue().replaceAll("\"","")+"\n");
@@ -430,6 +430,11 @@ public class QuerySPARQL<iterator> {
         }*/
         if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")&&(!curGraphQueryURI.equals(""))){
             repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue().substring(0,binding.getValue("ClasseConceito1").stringValue().lastIndexOf("/"))),grafoClasses);
+        }
+        if(binding.hasBinding("ClasseConceito")&&binding.hasBinding("ClasseConceitoLabel")&&(!curGraphQueryURI.equals(""))){
+            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito").stringValue().substring(0,binding.getValue("ClasseConceito").stringValue().lastIndexOf("/"))),grafoClasses);
 
         }
 
