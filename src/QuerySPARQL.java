@@ -96,16 +96,17 @@ public class QuerySPARQL<iterator> {
         String fileAsString = dadosQuery();
         queries=fileAsString.split("#QUERY");//separador das consultas
         numQueries=queries.length;
+        System.out.println(numQueries);
         startQueryNumber=numQueries;
         locB = new LocalBase();
         currGraph=0;
         numGraphs=0;
-
+        /*
         try {
             load_data();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         while(current < numQueries) {
             count=0;
@@ -114,6 +115,8 @@ public class QuerySPARQL<iterator> {
             iniciaRepo();
             //Realiza a consulta
 
+
+            /*
             while(current>1&&currGraph<numGraphs){
 
                 if(!(current >1)) {
@@ -126,6 +129,7 @@ public class QuerySPARQL<iterator> {
                     tempCurGraphs.add(tempGraphName);
                     extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
                     //numQueries++;
+                    System.out.println(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
 
                 }
                 //System.out.println(queries[current]);
@@ -133,8 +137,11 @@ public class QuerySPARQL<iterator> {
                 currGraph++;
 
             }
+            */
             if(current==2){
                 numQueries=(startQueryNumber-2)*(numGraphs)+1;
+                System.out.println("\n\n"+numQueries+"\n\n");
+                geraQueries(current,queries);
             }
 
 
@@ -143,7 +150,7 @@ public class QuerySPARQL<iterator> {
             }
             if(current>1&&current<6){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
-                //System.out.println("\n\n EXECUÇÂO \n\n");
+                System.out.println("\n\n EXECUÇÂO \n\n");
                 System.out.println(extraQueries.get(current-2).toString());
                 for (String element : tempCurGraphs){
                     //System.out.println("\n"+element+"\n");
@@ -241,7 +248,7 @@ public class QuerySPARQL<iterator> {
 
                 count = 0;
                 while (count < binding.size()) {
-                    System.out.println(binding.getValue(values[count]).toString());
+                    //System.out.println(binding.getValue(values[count]).toString());
                     classes[count] = binding.getValue(values[count]).toString();
                     count++;
                 }
@@ -299,11 +306,11 @@ public class QuerySPARQL<iterator> {
 
             current++;
         }
-        locB.runQuery("select * where { ?s ?p ?o. }");
-        locB.printQueryResult();
+        //locB.runQuery("select * where { ?s ?p ?o. }");
+        //locB.printQueryResult();
 
 
-        locB.finishConnection();
+        //locB.finishConnection();
 
 
     }
@@ -333,6 +340,7 @@ public class QuerySPARQL<iterator> {
         }
         //Constroi a string com o conteúdo do arquivo
         StringBuilder sb = new StringBuilder();
+
 
 
         while(line != null){
@@ -418,7 +426,7 @@ public class QuerySPARQL<iterator> {
             repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()),DCAT.HAS_DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             graphAdds.add((binding.getValue("idDistrib").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
-            System.out.println("\n"+binding.getValue("idDistrib").stringValue().replaceAll("\"","")+"\n");
+            //System.out.println("\n"+binding.getValue("idDistrib").stringValue().replaceAll("\"","")+"\n");
             numGraphs++;//Define o número de grafos a partir da consulta inicial
             //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
@@ -431,6 +439,7 @@ public class QuerySPARQL<iterator> {
         if(binding.hasBinding("ClasseConceito1")&&binding.hasBinding("ClasseConceito2")&&(!curGraphQueryURI.equals(""))){
             repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue()),grafoClasses);
             repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito1").stringValue().substring(0,binding.getValue("ClasseConceito1").stringValue().lastIndexOf("/"))),grafoClasses);
+            System.out.println(binding.getValue("\n\n"+"ClasseConceito1"));
         }
         if(binding.hasBinding("ClasseConceito")&&binding.hasBinding("ClasseConceitoLabel")&&(!curGraphQueryURI.equals(""))){
             repoCon.add(factory.createIRI(curGraphQueryURI.toString()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("ClasseConceito").stringValue()),grafoClasses);
@@ -501,12 +510,12 @@ public class QuerySPARQL<iterator> {
         repoCon_test = repository_test.getConnection();
 
         while (index<arquivos.length-1) {
-            System.out.println(index+"\n"+arquivos.length);
+            //System.out.println(index+"\n"+arquivos.length);
             triplas =  new File("triple_data/"+arquivos[index].replaceAll("\n",""));
-            System.out.println("/n"+triplas.getAbsolutePath().replaceAll("\\\\","/"));
+            //System.out.println("/n"+triplas.getAbsolutePath().replaceAll("\\\\","/"));
             lquery=repoCon_test.prepareUpdate(QueryLanguage.SPARQL, "load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
             //loadQuery= repoCon_test.prepareTupleQuery("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index]+">");
-            System.out.println("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
+            //System.out.println("load <file:///"+triplas.getAbsolutePath().replaceAll("\\\\","/")+"> into graph <"+prefix[index+1].replaceAll("\n","")+">");
             lquery.execute();
             index++;
             //TODO Deletar os dados do repositorio
@@ -517,6 +526,26 @@ public class QuerySPARQL<iterator> {
 
     }
 
+    private static int geraQueries(int current,String[] queries){
+        int queryNumber=0;
+        while(current>1&&queryNumber<numExtQueires){
+            while(currGraph<numGraphs){
+
+                tempGraphName =  new String(graphAdds.get(currGraph));
+                tempCurGraphs.add(tempGraphName);
+                extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
+                //numQueries++;
+                System.out.println(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
+
+
+                //System.out.println(queries[current]);
+                //System.out.println("\n ***"+current+"***** \n");
+                currGraph++;
+
+            }
+        }
+
+    }
 
 
 

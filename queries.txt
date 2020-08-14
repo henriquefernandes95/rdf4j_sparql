@@ -11,7 +11,7 @@ where {
         ?DS dct:publisher ?publicador .
         ?DS dcat:distribution ?idDistrib .
         ?idDistrib dct:title ?titleDistrib .
-        ?distrib dcat:downloadURL ?endArquivo .
+        ?idDistrib dcat:downloadURL ?endArquivo .
         ?publicador foaf:name ?nomeOrg.
 
 }
