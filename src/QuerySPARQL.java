@@ -116,7 +116,7 @@ public class QuerySPARQL<iterator> {
             //Realiza a consulta
 
 
-            /*
+
             while(current>1&&currGraph<numGraphs){
 
                 if(!(current >1)) {
@@ -137,24 +137,24 @@ public class QuerySPARQL<iterator> {
                 currGraph++;
 
             }
-            */
+
             if(current==2){
                 numQueries=(startQueryNumber-2)*(numGraphs)+1;
                 System.out.println("\n\n"+numQueries+"\n\n");
-                geraQueries(current,queries);
+                //geraQueries(current,queries);
             }
 
 
             if(current <=1){
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[current]);
             }
-            if(current>1&&current<6){
-                query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
+            if(current>1&&current<numQueries){
+                query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get((current-2)%6).toString());
                 System.out.println("\n\n EXECUÇÂO \n\n");
-                System.out.println(extraQueries.get(current-2).toString());
+                System.out.println(extraQueries.get((current-2)%6).toString());
                 for (String element : tempCurGraphs){
                     //System.out.println("\n"+element+"\n");
-                    if(extraQueries.get(current-2).toString().contains((CharSequence) element)){
+                    if(extraQueries.get((current-2)%6).toString().contains((CharSequence) element)){
                         curGraphQueryURI=element;
                         //System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
                     }
@@ -544,7 +544,7 @@ public class QuerySPARQL<iterator> {
 
             }
         }
-
+        return 0;
     }
 
 
