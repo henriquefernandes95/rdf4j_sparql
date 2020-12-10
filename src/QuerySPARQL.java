@@ -127,9 +127,9 @@ public class QuerySPARQL<iterator> {
                 else{
                     tempGraphName =  new String(graphAdds.get(currGraph));
                     tempCurGraphs.add(tempGraphName);
-                    extraQueries.add(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
+                    extraQueries.add(queries[(current%(queries.length-2))].replaceAll("#graphToQuery", tempGraphName + ""));
                     //numQueries++;
-                    System.out.println(queries[current].replaceAll("#graphToQuery", tempGraphName + ""));
+                    System.out.println(queries[(current%(queries.length-2))].replaceAll("#graphToQuery", tempGraphName + ""));
 
                 }
                 //System.out.println(queries[current]);
@@ -149,19 +149,22 @@ public class QuerySPARQL<iterator> {
                 query = con.prepareTupleQuery(QueryLanguage.SPARQL, queries[current]);
             }
             if(current>1&&current<numQueries){
-                query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get((current-2)%6).toString());
+                query = con.prepareTupleQuery(QueryLanguage.SPARQL, extraQueries.get(current-2).toString());
                 System.out.println("\n\n EXECUÇÂO \n\n");
-                System.out.println(extraQueries.get((current-2)%6).toString());
+                System.out.println(extraQueries.get(current-2).toString());
                 for (String element : tempCurGraphs){
                     //System.out.println("\n"+element+"\n");
-                    if(extraQueries.get((current-2)%6).toString().contains((CharSequence) element)){
+                    if(extraQueries.get(current-2).toString().contains((CharSequence) element)){
                         curGraphQueryURI=element;
                         //System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
                     }
                 }
 
             }
-            //currGraph=0;
+            if(current>2&&((current-2)%(queries.length-2))==0){
+                currGraph=0;
+            }
+
             TupleQueryResult result = null;
 
             result = query.evaluate();
@@ -279,6 +282,7 @@ public class QuerySPARQL<iterator> {
             curGraphQueryURI="";//Esvazia a URI para que a nova possa ser obtida e testada
             con.close();
             escreveArquivo(results);
+
 
 
 
