@@ -86,6 +86,7 @@ public class QuerySPARQL<iterator> {
         int current = 1;
         int numQueries = 0;
         int startQueryNumber;
+        int queryProcessing=2;
         Iterator inter;
 
 
@@ -101,12 +102,12 @@ public class QuerySPARQL<iterator> {
         locB = new LocalBase();
         currGraph=0;
         numGraphs=0;
-        /*
+
         try {
             load_data();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
         while(current < numQueries) {
             count=0;
@@ -127,9 +128,9 @@ public class QuerySPARQL<iterator> {
                 else{
                     tempGraphName =  new String(graphAdds.get(currGraph));
                     tempCurGraphs.add(tempGraphName);
-                    extraQueries.add(queries[(current%(queries.length-2))].replaceAll("#graphToQuery", tempGraphName + ""));
+                    extraQueries.add(queries[queryProcessing].replaceAll("#graphToQuery", tempGraphName + "/"));
                     //numQueries++;
-                    System.out.println(queries[(current%(queries.length-2))].replaceAll("#graphToQuery", tempGraphName + ""));
+                    System.out.println(queries[queryProcessing].replaceAll("#graphToQuery", tempGraphName + "/"));
 
                 }
                 //System.out.println(queries[current]);
@@ -159,11 +160,13 @@ public class QuerySPARQL<iterator> {
                         //System.out.println("\n\nENCONTROU BASE"+curGraphQueryURI+"\n\n");
                     }
                 }
+                if(current-2==extraQueries.size()-1){
+                    currGraph=0;
+                    queryProcessing++;
+                }
 
             }
-            if(current>2&&((current-2)%(queries.length-2))==0){
-                currGraph=0;
-            }
+
 
             TupleQueryResult result = null;
 
@@ -259,7 +262,7 @@ public class QuerySPARQL<iterator> {
                 //modBuilder.subject(binding.getValue("DS").stringValue())
                 //Criando as triplas. Teste. Restringindo a cada caso
 
-                triplifica(repoCon, factory, factoryLoc);
+                triplifica(repoCon, factory, factoryLoc, current);
 
 
                 //if(binding.hasBinding(""))
@@ -417,21 +420,24 @@ public class QuerySPARQL<iterator> {
         return 0;
     }
 
-    private static int triplifica(RepositoryConnection repoCon, ValueFactory factory, ValueFactory factoryLoc){
+    private static int triplifica(RepositoryConnection repoCon, ValueFactory factory, ValueFactory factoryLoc, int current){
 
         IRI grafoClasses = factory.createIRI("http://example.org/GrafoClasses/");
         if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {
-            repoCon.add(factory.createIRI(binding.getValue("publicador").stringValue()), RDF.TYPE, FOAF.ORGANIZATION, grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("publicador").stringValue()), FOAF.NAME, factory.createLiteral(binding.getValue("titleDistrib").stringValue()), grafoClasses);
+            repoCon.add(factory.createIRI("http://"+binding.getValue("nomeOrg").stringValue().replaceAll("[, ]","_")), RDF.TYPE, FOAF.ORGANIZATION, grafoClasses);
+            repoCon.add(factory.createIRI("http://"+binding.getValue("nomeOrg").stringValue().replaceAll("[, ]","_")), FOAF.NAME, factory.createLiteral(binding.getValue("titleDistrib").stringValue()), grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), RDF.TYPE, DCAT.DATASET,grafoClasses);
-            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI(binding.getValue("publicador").stringValue()),grafoClasses);
+            repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.PUBLISHER, factory.createIRI("http://"+binding.getValue("nomeOrg").stringValue().replaceAll("[, ]","_")),grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()), RDF.TYPE, DCAT.DISTRIBUTION,grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), DC.TITLE, factory.createLiteral(binding.getValue("titleDS").stringValue()),grafoClasses);
             repoCon.add(factory.createIRI(binding.getValue("idDistrib").stringValue()),DCAT.HAS_DISTRIBUTION,factory.createIRI(binding.getValue("DS").stringValue()),grafoClasses);
             //repoCon.add(factory.createIRI(binding.getValue("DS").stringValue()), factory.createIRI("http://purl.org/dc/terms/references"), factory.createIRI(binding.getValue("nomeOrg").stringValue()));
             graphAdds.add((binding.getValue("idDistrib").stringValue().replaceAll("\"","")));//adiciona as URIs dos grafos
             //System.out.println("\n"+binding.getValue("idDistrib").stringValue().replaceAll("\"","")+"\n");
-            numGraphs++;//Define o número de grafos a partir da consulta inicial
+            if(current==1){
+                numGraphs++;//Define o número de grafos a partir da consulta inicial
+            }
+
             //System.out.println("\nNUM GRAPHS"+numGraphs);
         }
         /*if(binding.hasBinding("DS")&&binding.hasBinding("nomeOrg")) {

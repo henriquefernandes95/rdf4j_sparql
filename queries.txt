@@ -9,9 +9,10 @@ where {
         ?portal dcat:dataset ?DS .
         ?DS dct:title ?titleDS .
         ?DS dct:publisher ?publicador .
-        ?DS dcat:distribution ?idDistrib .
-        ?idDistrib dct:title ?titleDistrib .
-        ?idDistrib dcat:downloadURL ?endArquivo .
+        ?DS dcat:distribution ?Distrib .
+        ?Distrib dct:title ?titleDistrib .
+        ?Distrib dct:identifier ?idDistrib.
+        ?Distrib dcat:downloadURL ?endArquivo .
         ?publicador foaf:name ?nomeOrg.
 
 }
@@ -24,7 +25,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseConceitoLabel2 where {
     {
-            service <http://192.168.1.102:7200/repositories/DNN> {
+            service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
             graph <#graphToQuery> {
                 ?s ?p ?o .
                 #Extrai sujeitos
@@ -50,7 +51,7 @@ select distinct ?ClasseConceito1 ?ClasseConceitoLabel1 ?ClasseConceito2 ?ClasseC
         	}
 } #fim- 1o.union
 union {
-            service <http://192.168.1.102:7200/repositories/DNN> {
+            service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
                 graph <#graphToQuery> {
                     ?s ?p ?o .
                     #Extrai objetos
@@ -87,7 +88,7 @@ PREFIX dbo: <http://dbpedia.org/ontology/>
 
 select distinct ?ClasseConceito ?ClasseConceitoLabel
 where {
-    	{service <http://192.168.1.102:7200/repositories/DNN> {
+    	{service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
         	graph <#graphToQuery> {
                 ?s ?p ?o .
                 #Extrai sujeitos
@@ -106,7 +107,7 @@ where {
         }
 	}
 union {
-        service <http://192.168.1.102:7200/repositories/DNN> {
+        service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
             graph <#graphToQuery> {
                 ?s ?p ?o .
                 #Extrai objetos
@@ -133,7 +134,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 select distinct ?ClasseConceito ?ClasseConceitoLabel
 where {
-    	{service <http://192.168.1.102:7200/repositories/DNN> {
+    	{service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
             graph <#graphToQuery> {
                 ?s ?p ?o .
             #Extrai sujeitos
@@ -150,7 +151,7 @@ where {
         }
 }
 union {
-        service <http://192.168.1.102:7200/repositories/DNN> {
+        service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
             graph <#graphToQuery> {
                 ?s ?p ?o .
             #Extrai objetos
@@ -199,7 +200,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 select distinct ?ClasseConceito ?ClasseConceitoLabel where {
     {
-            service <http://192.168.1.102:7200/repositories/DNN> {
+            service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
             graph <#graphToQuery> {
                 ?s ?p ?o .
                 #Extrai sujeitos
@@ -216,7 +217,7 @@ select distinct ?ClasseConceito ?ClasseConceitoLabel where {
         	}
 } #fim- 1o.union
 union {
-            service <http://192.168.1.102:7200/repositories/DNN> {
+            service <http://192.168.1.102:7200/repositories/graphdb-repo-test> {
                 graph <#graphToQuery> {
                     ?s ?p ?o .
                     #Extrai objetos
